@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Package Check-In</title>
+  <style>
+    /* ========== RESET & BASE STYLES ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .nav-bar {
+      background: #333;  
+      color: white;
+      padding: 0;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .nav-left {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-left: 20px;
+    }
+    
+    .nav-right {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-right: 20px;
+      gap: 15px;  
+    }
+    
+    /* Navigation Buttons */
+    .nav-btn {
+      background: transparent;  
+      color: white;  
+      padding: 0 16px;  
+      border: none;
+      height: 100%;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 100px;
+    }
+    
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.1);  
+    }
+    
+    .nav-btn.active {
+      background: rgba(255,255,255,0.2);  
+    }
+    
+    /* Admin Dropdown */
+    .dropdown {
+      position: relative;
+      height: 100%;
+    }
+    
+    .dropdown-btn {
+      background: transparent;  
+      color: white;  
+      padding: 0 20px;
+      border: none;
+      height: 100%;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 120px;
+    }
+    
+    .dropdown-btn:hover {
+      background: transparent;  
+    }
+    
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;  
+      min-width: 220px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);  
+      z-index: 1001;
+      overflow: hidden;
+    }
+    
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    
+    .dropdown-content a {
+      display: block;
+      padding: 12px 16px;
+      color: #333;  
+      text-decoration: none;
+      border-bottom: 1px solid #eee;  
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+    
+    .dropdown-content a:hover {
+      background: #f5f5f5;  
+    }
+    
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    
+    /* User Info & Actions*/
+    .user-info {
+      color: white;  
+      font-size: 14px;
+      padding: 5px 10px;  
+      background: transparent;  
+      border-radius: 4px;
+    }
+    
+    .profile-btn, .logout-btn {
+      color: white; 
+      text-decoration: none;
+      padding: 8px 16px;  
+      border-radius: 4px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    
+    .profile-btn {
+      background: #4CAF50;  
+    }
+    
+    .profile-btn:hover {
+      background: #45a049;  
+    }
+    
+    .logout-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .logout-btn:hover {
+      background: #da190b;  
+      background: rgba(255,255,255,0.1);  
+    }
+    
+    /* ========== MAIN CONTENT AREA ========== */
+    .content-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: white;
+      margin: 20px;  
+      border-radius: 10px; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);  
+    
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    input, select, textarea {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .submit-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .submit-btn:hover {
+      background: #45a049;
+    }
+    
+    .card {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    
+    .error {
+      color: #d32f2f;
+      margin-top: 10px;
+      padding: 10px;
+      background: #ffebee;
+      border-radius: 4px;
+      border-left: 4px solid #d32f2f;
+    }
+    
+    .success {
+      color: #2e7d32;
+      margin-top: 10px;
+      padding: 10px;
+      background: #e8f5e8;
+      border-radius: 4px;
+      border-left: 4px solid #2e7d32;
+    }
+    
+    .greenflash {
+      background: #d0ffd0 !important;
+      transition: background 0.6s ease;
+    }
+    
+    #status {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      font-weight: bold;
+      color: green;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    
+    .tables-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      height: calc(50vh - 100px);
+    }
+    
+    .table-wrapper {
+      flex: 1;
+      min-width: 600px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .table-wrapper h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 18px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+    
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    th {
+      background: #e3f2fd;
+      font-weight: bold;
+      color: #333;
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    
+    tr:hover {
+      background: #e3f2fd;
+    }
+    
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .pill.red {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+    
+    .pill.green {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .delete-btn {
+      background: #d32f2f;
+      color: white;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    
+    .delete-btn:hover {
+      background: #b71c1c;
+    }
+    
+    .notes-toggle {
+      background: #666;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+    
+    .notes-popup {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      max-width: 300px;
+    }
+    
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .export-btn {
+      background: #2e7d32;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .export-btn:hover {
+      background: #1b5e20;
+    }
+    
+    .table-scroll {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .tables-container {
+        flex-direction: column;
+        height: auto;
+      }
+      
+      .table-wrapper {
+        min-width: 100%;
+      }
+      
+      .content-container {
+        margin: 10px;
+        padding: 15px;
+      }
+      
+      .nav-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .nav-left, .nav-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-btn, .logout-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+    }
+    
+    /* Loader Styles */
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #4CAF50;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Question Mark Tooltip */
+    .help-icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 5px;
+        cursor: help;
+        position: relative;
+    }
+    
+    .help-icon .tooltip {
+        display: none;
+        position: absolute;
+        background: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        width: 200px;
+        z-index: 1000;
+        font-size: 12px;
+        line-height: 1.4;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .help-icon:hover .tooltip {
+        display: block;
+    }
+    
+    /* Feature Suggestion */
+    .feature-suggestion {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .suggestion-btn {
+        background: #667eea;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+    }
+    
+    .suggestion-box {
+        display: none;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box h4 {
+        margin-top: 0;
+        color: #333;
+    }
+    
+    .suggestion-box textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box button {
+        background: #4CAF50;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Form submission loading only */
+    form.submitting {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    form.submitting button[type="submit"] {
+        position: relative;
+    }
+
+    form.submitting button[type="submit"]::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: button-spin 0.6s linear infinite;
+    }
+
+    @keyframes button-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+  </style>
+ <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  
+  <div class="main-container">
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <div class="nav-left">
+        <!-- Check-In Button (Current Page) -->
+        <a href="/checkin" style="text-decoration:none;">
+          <button class="nav-btn active">Check-In</button>
+        </a>
+        
+        <!-- Search Button -->
+        <a href="/search" style="text-decoration:none;">
+          <button class="nav-btn">Check-Out</button>
+        </a>
+
+        <a href="/return_to_sender" style="text-decoration:none;">
+          <button class="nav-btn">RTS/FWD</button>
+        </a>
+
+        <!-- PO Audit Button -->
+        <a href="/po_audit" style="text-decoration:none;">
+          <button class="nav-btn">PO Audit</button>
+        </a>
+        
+        <!-- Admin Button (Dropdown) -->
+        {% if session.get('is_admin') %}
+        <div class="dropdown">
+          <button class="dropdown-btn">Admin</button>
+          <div class="dropdown-content">
+            <a href="/admin/requests">Requests</a>
+            <a href="{{ url_for('admin_user_management') }}">User Management</a>
+            {% if session.get('can_manage_halls') %}
+            <a href="{{ url_for('admin_halls') }}">Hall Management</a>
+            {% endif %}
+            {% if session.get('can_manage_shifts') %}
+            <a href="{{ url_for('admin_shift_scheduler') }}">Shift Scheduler</a>
+            {% endif %}
+            <a href="{{ url_for('admin_update_students') }}">Student Data</a>
+            <a href="{{ url_for('admin_update_packages') }}">Package Data</a>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- My Schedule Button (for all users) -->
+        <a href="/my_schedule" style="text-decoration:none;">
+          <button class="nav-btn">My Schedule</button>
+        </a>
+      </div>
+      
+      <div class="nav-right">
+      <div class="user-info">
+        Welcome, {{ session.get('user_initials', '') }} ({{ session.get('user_title', '') }})
+      </div>
+      <a href="/profile" class="profile-btn" style="margin-left: 10px; background: rgba(255,255,255,0.1);">Profile</a>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </div>      
+    
+    <!-- Main Content Area -->
+    <div class="content-container">
+      <h1>Package Check-In</h1>
+      <div id="status">Connecting...</div>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      
+      {% if success %}
+        <div class="success">{{ success }}</div>
+      {% endif %}
+
+      <form method="POST" autocomplete="off">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tracking ID
+              <span class="help-icon">?
+                <span class="tooltip">Scan or enter package tracking number</span>
+              </span>
+            </label>
+            <textarea id="tracking_id" name="tracking_id" rows="3"
+              placeholder="Scan Multiple IDs Here..." autofocus
+              style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px; resize:vertical;"></textarea>
+            <small style="color:#666; display:block; margin-top:6px;">
+              Multiple Scan - each scan should go on a new line!
+            </small>
+
+          </div>
+
+          <div class="form-group">
+            <label>Room Number *
+              <span class="help-icon">?
+                <span class="tooltip">Student's room number (e.g., 108-1)</span>
+              </span>
+            </label>
+            <input list="rooms" id="roomNumber" name="roomNumber" placeholder="Search by name or room..." required>
+            <datalist id="rooms">
+              {% for room in rooms %}
+              <option value="{{ room.roomNumber }}" label="{{ room.roomNumber }} — {{ room.firstName }} {{ room.lastName }}"></option>
+              {% endfor %}
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label>Package Type
+              <span class="help-icon">?
+                <span class="tooltip">Select type of package</span>
+              </span>
+            </label>
+            <select id="package_type" name="package_type" required>
+              {% for package_type in package_types %}
+              <option value="{{ package_type }}" {% if package_type == 'Small Box-Brown' %}selected{% endif %}>
+                {{ package_type }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Initials
+              <span class="help-icon">?
+                <span class="tooltip">Your initials (auto-filled)</span>
+              </span>
+            </label>
+            <input id="initials" name="initials" maxlength="4" value="{{ session.display_name }}" required readonly style="background-color: #f0f0f0;">
+          </div>
+
+          <div class="form-group">
+            <label>Perishable
+              <span class="help-icon">?
+                <span class="tooltip">Is this package perishable?</span>
+              </span>
+            </label>
+            <select id="perishable" name="perishable">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notes (Optional)
+            <span class="help-icon">?
+              <span class="tooltip">Additional notes about the package</span>
+            </span>
+          </label>
+          <textarea id="notes" name="notes" placeholder="Enter any additional notes about this package..."></textarea>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="submit-btn">Submit Check-In</button>
+          </a>
+
+        </div>
+      </form>
+
+      <!-- Export button -->
+      <br>
+      <a href="/export_csv" target="_blank" style="text-decoration:none;">
+        <button class="export-btn">Export to Excel</button>
+      </a>
+
+      <hr>
+      
+      <div class="tables-container">
+        <!-- ONLY checked-in packages -->
+        <div class="table-wrapper">
+          <h2>Checked-In Packages (Not Checked Out)
+           <!-- <span class="help-icon">
+              <span class="tooltip">Packages checked in but not yet picked up</span>
+            </span> -->
+          </h2>
+          <div class="table-scroll">
+            <table id="checkinTable">
+              <thead>
+                <tr>
+                  <th>ID
+                    <!-- <span class="help-icon">?
+                      <span class="tooltip">Package ID number</span>
+                    </span> -->
+                  </th>
+                  <th>Tracking ID
+                    <!-- <span class="help-icon">?
+                      <span class="tooltip">Unique tracking number</span>
+                    </span>-->
+                  </th>
+                  <th>Student
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Student name</span>
+                    </span> -->
+                  </th>
+                  <th>Room
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Room number</span>
+                    </span> -->
+                  </th>
+                  <th>Check-In Date
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Date package was checked in</span>
+                    </span> -->
+                  </th>
+                  <th>Initials
+                    <!-- <span class="help-icon">?
+                      <span class="tooltip">Employee initials</span>
+                    </span> -->
+                  </th>
+                  <th>Package Type
+                    <!-- <span class="help-icon">?
+                      <span class="tooltip">Type of package</span>
+                    </span> -->
+                  </th>
+                  <th>Perishable
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Perishable status</span>
+                    </span> -->
+                  </th>
+                  <th>Notes
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Additional notes</span>
+                    </span> -->
+                  </th>
+                  <th>Status
+                    <!-- <span class="help-icon">?
+                      <span class="tooltip">Check-out status</span>
+                    </span>-->
+                  </th>
+                  <th>Action
+                   <!-- <span class="help-icon">?
+                      <span class="tooltip">Available actions</span>
+                    </span> -->
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for r in checked_in_packages %}
+                <tr>
+                  <td>{{ r.pkgId }}</td>
+                  <td>{{ r.TrackingID }}</td>
+                  <td>{{ ((r.firstName or "") ~ " " ~ (r.lastName or ""))|trim or "—" }}</td>
+                  <td>{{ r.roomNumber }}</td>
+                  <td>{{ r.checkInDate or "" }}</td>
+                  <td>{{ r.checkInEmpInitials|default('') }}</td>
+                  <td>{{ r.package_type or '' }}</td>
+                  <td>{{ 'Yes' if r.perishable in ['yes', '1', 1, True] else 'No' }}</td>
+                  <td>
+                    {% if r.notes %}
+                      <button class="notes-toggle" onclick="toggleNotes(this, '{{ r.notes|escape }}')">+</button>
+                    {% endif %}
+                  </td>
+                  <td><span class="pill red">Not Checked Out</span></td>
+                  <td>
+                    <button class="delete-btn" onclick="deleteEntry({{ r.logId }})">Delete</button>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="11" style="text-align:center;">No checked-in packages</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!--ONLY checked-out packages -->
+        <div class="table-wrapper">
+          <h2>Checked-Out Packages
+            <!--
+            <span class="help-icon">?
+              <span class="tooltip">Packages that have been picked up</span>
+            </span> -->
+          </h2>
+          <div class="table-scroll">
+            <table id="checkoutTable">
+              <thead>
+                <tr>
+                  <th>ID
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Package ID number</span>
+                    </span>-->
+                  </th>
+                  <th>Tracking ID
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Unique tracking number</span>
+                    </span>-->
+                  </th>
+                  <th>Student
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Student name</span>
+                    </span>-->
+                  </th>
+                  <th>Room
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Room number</span>
+                    </span>-->
+                  </th>
+                  <th>Check-In Date
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Date package was checked in</span>
+                    </span>-->
+                  </th>
+                  <th>Checkout Date
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Date package was picked up</span>
+                    </span>-->
+                  </th>
+                  <th>Initials
+                   <!-- <span class="help-icon">?
+                      <span class="tooltip">Employee initials</span>
+                    </span>-->
+                  </th>
+                  <th>Package Type
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Type of package</span>
+                    </span>-->
+                  </th>
+                  <th>Perishable
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Perishable status</span>
+                    </span>-->
+                  </th>
+                  <th>Notes
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Additional notes</span>
+                    </span>-->
+                  </th>
+                  <th>Status
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Check-out status</span>
+                    </span>-->
+                  </th>
+                  <th>Action
+                    <!--<span class="help-icon">?
+                      <span class="tooltip">Available actions</span>
+                    </span>-->
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for r in checked_out_packages %}
+                <tr>
+                  <td>{{ r.pkgId }}</td>
+                  <td>{{ r.TrackingID }}</td>
+                  <td>{{ ((r.firstName or "") ~ " " ~ (r.lastName or ""))|trim or "—" }}</td>
+                  <td>{{ r.roomNumber }}</td>
+                  <td>{{ r.checkInDate or "" }}</td>
+                  <td>{{ r.checkoutDate or "" }}</td>
+                  <td>{{ r.checkoutEmpInitials|default('') }}</td>
+                  <td>{{ r.package_type or '' }}</td>
+                  <td>{{ 'Yes' if r.perishable in ['yes', '1', 1, True] else 'No' }}</td>
+                  <td>
+                    {% if r.notes %}
+                      <button class="notes-toggle" onclick="toggleNotes(this, '{{ r.notes|escape }}')">+</button>
+                    {% endif %}
+                  </td>
+                  <td><span class="pill green">Checked Out</span></td>
+                  <td>
+                    <button class="delete-btn" onclick="deleteEntry({{ r.logId }})">Delete</button>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="12" style="text-align:center;">No checked-out packages</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Feature Suggestion -->
+  <div class="feature-suggestion">
+    <div class="suggestion-box" id="suggestionBox">
+      <h4>Feature Suggestion</h4>
+      <textarea id="suggestionText" placeholder="Share your ideas for new features or improvements..."></textarea>
+      <button onclick="submitSuggestion()">Submit</button>
+    </div>
+    <button class="suggestion-btn" onclick="toggleSuggestionBox()">Feature Suggestions</button>
+  </div>
+
+  <!-- Combined Socket.IO + Dynamic Table + Preview -->
+  <script>
+    // Fast loading: Load packages asynchronously after page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Focus tracking input immediately
+        document.getElementById('tracking_id').focus();
+        
+        // Load recent packages in background
+        setTimeout(loadCheckinData, 100); // Small delay to let page render first
+        
+        // Handle form submissions
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                this.classList.add('submitting');
+            });
+        });
+    });
+    
+    const socket = io({
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+  
+    const statusBox = document.getElementById("status");
+    const trackInput = document.getElementById("tracking_id");
+  
+    // Notes popup functionality
+    function toggleNotes(button, notesText) {
+      const existingPopup = document.querySelector('.notes-popup');
+      if (existingPopup) {
+        existingPopup.remove();
+        return;
+      }
+  
+      const popup = document.createElement('div');
+      popup.className = 'notes-popup';
+      popup.innerHTML = `
+        <strong>Notes:</strong>
+        <p>${notesText}</p>
+        <button onclick="this.parentElement.remove()" style="background:#666;color:white;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;">Close</button>
+      `;
+      
+      const rect = button.getBoundingClientRect();
+      popup.style.position = 'fixed';
+      popup.style.left = (rect.right + 5) + 'px';
+      popup.style.top = (rect.top) + 'px';
+      
+      document.body.appendChild(popup);
+      
+      button.textContent = '-';
+      button.onclick = function() { popup.remove(); button.textContent = '+'; button.onclick = function() { toggleNotes(button, notesText); }; };
+    }
+  
+    // Socket connection status
+    socket.on("connect", () => { 
+      statusBox.textContent = "Connected"; 
+      statusBox.style.color = "green"; 
+    });
+    
+    socket.on("disconnect", (reason) => { 
+      statusBox.textContent = "Disconnected: " + reason; 
+      statusBox.style.color = "red"; 
+    });
+    
+    socket.on("connect_error", (error) => {
+      statusBox.textContent = "Connection Error"; 
+      statusBox.style.color = "red";
+    });
+    
+    socket.on("reconnecting", (attemptNumber) => {
+      statusBox.textContent = "Reconnecting... Attempt " + attemptNumber; 
+      statusBox.style.color = "orange";
+    });
+    
+    socket.on("reconnect", (attemptNumber) => {
+      statusBox.textContent = "Reconnected"; 
+      statusBox.style.color = "green";
+    });
+    
+    socket.on("reconnect_failed", () => {
+      statusBox.textContent = "Reconnection Failed"; 
+      statusBox.style.color = "red";
+    });
+  
+    statusBox.textContent = "Connecting...";
+    statusBox.style.color = "gray";
+
+    // New scan event
+    socket.on("new_scan", data => {
+      if (!data || !data.tracking_id) return;
+      trackInput.value = data.tracking_id;
+      trackInput.focus();
+      trackInput.classList.add("greenflash");
+      setTimeout(() => trackInput.classList.remove("greenflash"), 700);
+    });
+
+    socket.on("refresh_recent", async () => {
+      // Reload data when new package is added/checked out
+      await loadCheckinData();
+    });
+
+    socket.on("refresh_all", () => { window.location.reload(); });
+
+    // Async data loading functions
+    async function loadCheckinData() {
+      try {
+        const response = await fetch('/api/checkin_data?limit=50');
+        if (!response.ok) throw new Error('API error');
+        
+        const data = await response.json();
+        
+        // Update tables
+        updateCheckinTables(data.checked_in, data.checked_out);
+        
+      } catch (error) {
+        console.log('Background data load failed, using fallback');
+        // Page is still usable without the data
+      }
+    }
+
+    function updateCheckinTables(checkedIn, checkedOut) {
+      // Update Check-In Table
+      const checkinTable = document.getElementById('checkinTable');
+      if (checkinTable && checkedIn) {
+        const tbody = checkinTable.querySelector('tbody');
+        if (tbody) {
+          tbody.innerHTML = '';
+          
+          if (checkedIn.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">No checked-in packages</td></tr>';
+          } else {
+            checkedIn.forEach(r => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${r.logId || ''}</td>
+                <td>${r.TrackingID || ''}</td>
+                <td>${(r.firstName || '') + ' ' + (r.lastName || '')}</td>
+                <td>${r.roomNumber || ''}</td>
+                <td>${formatDate(r.checkInDate)}</td>
+                <td>${r.checkInEmpInitials || ''}</td>
+                <td>${r.package_type || ''}</td>
+                <td>${(r.perishable === 'yes' || r.perishable === 1 || r.perishable === true) ? 'Yes' : 'No'}</td>
+                <td>${r.notes ? '<button class="notes-toggle" onclick="toggleNotes(this, \\\'' + escapeHtml(r.notes) + '\\\')">+</button>' : ''}</td>
+                <td><span class="pill red">Not Checked Out</span></td>
+                <td><button class="delete-btn" onclick="deleteEntry(${r.logId})">Delete</button></td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        }
+      }
+      
+      // Update Check-Out Table
+      const checkoutTable = document.getElementById('checkoutTable');
+      if (checkoutTable && checkedOut) {
+        const tbody = checkoutTable.querySelector('tbody');
+        if (tbody) {
+          tbody.innerHTML = '';
+          
+          if (checkedOut.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">No checked-out packages</td></tr>';
+          } else {
+            checkedOut.forEach(r => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${r.logId || ''}</td>
+                <td>${r.TrackingID || ''}</td>
+                <td>${(r.firstName || '') + ' ' + (r.lastName || '')}</td>
+                <td>${r.roomNumber || ''}</td>
+                <td>${formatDate(r.checkInDate)}</td>
+                <td>${formatDate(r.checkoutDate)}</td>
+                <td>${r.checkoutEmpInitials || ''}</td>
+                <td>${r.package_type || ''}</td>
+                <td>${(r.perishable === 'yes' || r.perishable === 1 || r.perishable === true) ? 'Yes' : 'No'}</td>
+                <td>${r.notes ? '<button class="notes-toggle" onclick="toggleNotes(this, \\\'' + escapeHtml(r.notes) + '\\\')">+</button>' : ''}</td>
+                <td><span class="pill green">Checked Out</span></td>
+                <td><button class="delete-btn" onclick="deleteEntry(${r.logId})">Delete</button></td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        }
+      }
+    }
+
+    function formatDate(val) {
+    if (!val) return '—';
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleDateString('en-US', {
+      month: '2-digit', day: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true
+    });
+  }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Delete entry function
+    async function deleteEntry(logId) {
+      if (!confirm("Are you sure you want to delete this entry? This action cannot be undone.")) {
+        return;
+      }
+      
+      try {
+        const response = await fetch("/delete_entry", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `log_id=${logId}`
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload data after delete
+          await loadCheckinData();
+        } else {
+          alert("Error deleting entry: " + (result.error || "Unknown error"));
+        }
+      } catch (error) {
+        alert("Error deleting entry: " + error.message);
+      }
+    }
+
+    // Feature Suggestion Functions
+    function toggleSuggestionBox() {
+        const box = document.getElementById('suggestionBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+    
+    function submitSuggestion() {
+        const text = document.getElementById('suggestionText').value;
+        if (text.trim()) {
+            alert('Thank you for your suggestion! We\'ll consider it for future updates.');
+            document.getElementById('suggestionText').value = '';
+            document.getElementById('suggestionBox').style.display = 'none';
+        } else {
+            alert('Please enter your suggestion before submitting.');
+        }
+    }
+    
+    // Close suggestion box when clicking outside
+    document.addEventListener('click', function(e) {
+        const suggestionBtn = document.querySelector('.suggestion-btn');
+        const suggestionBox = document.getElementById('suggestionBox');
+        
+        if (!suggestionBtn.contains(e.target) && !suggestionBox.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+  </script>
+</body>
+</html>

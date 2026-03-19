@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shift Requests</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+    .nav-bar { background: #333; color: white; padding: 12px 20px; display:flex; justify-content:space-between; align-items:center; }
+    .nav-left { display:flex; gap:15px; align-items:center; }
+    .nav-btn { background: transparent; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer; }
+    .container { max-width: 1100px; margin: 20px auto; background:white; padding: 20px; border-radius:10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { margin-top:0; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 10px; vertical-align: top; }
+    th { background: #f2f2f2; }
+    .badge-open { background:#ff9800; color:white; padding:3px 8px; border-radius: 10px; font-size: 12px; }
+    .badge-closed { background:#4CAF50; color:white; padding:3px 8px; border-radius: 10px; font-size: 12px; }
+    .btn { padding: 6px 10px; border:none; border-radius:4px; cursor:pointer; }
+    .btn-close { background:#4CAF50; color:white; }
+    .muted { color:#666; font-size: 12px; }
+    .flash { padding:10px; border-radius:6px; margin: 10px 0; }
+    .flash-success { background:#e8f5e8; color:#2e7d32; }
+    .flash-error { background:#ffebee; color:#d32f2f; }
+        /* Admin Dropdown */
+        .dropdown {
+        position: relative;
+        height: 100%;
+        }
+        
+        .dropdown-btn {
+        background: transparent;  
+        color: white;  
+        padding: 0 20px;
+        border: none;
+        height: 100%;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 120px;
+        }
+        
+        .dropdown-btn:hover {
+        background: transparent;  
+        }
+        
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;  
+        min-width: 220px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);  
+        z-index: 1001;
+        overflow: hidden;
+        }
+        
+        .dropdown:hover .dropdown-content {
+        display: block;
+        }
+        
+        .dropdown-content a {
+        display: block;
+        padding: 12px 16px;
+        color: #333;  
+        text-decoration: none;
+        border-bottom: 1px solid #eee;  
+        transition: background 0.2s;
+        font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+        background: #f5f5f5;  
+        }
+        
+        .dropdown-content a:last-child {
+        border-bottom: none;
+        }
+
+        .logout-btn {
+          background: transparent;
+          color: white;
+          padding: 8px 16px;
+          text-decoration: none;
+          border-radius: 4px;
+          font-size: 14px;
+          display: inline-block;
+          transition: background 0.3s;
+          border: 1px solid rgba(255,255,255,0.2);
+        }
+        .profile-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+  </style>
+</head>
+<body>
+ <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-left">
+      <a href="/checkin" style="text-decoration:none;">
+        <button class="nav-btn">Check-In</button>
+      </a>
+
+      <a href="/search" style="text-decoration:none;">
+        <button class="nav-btn">Check-Out</button>
+      </a>
+
+      <a href="/return_to_sender" style="text-decoration:none;">
+        <button class="nav-btn">RTS/FWD</button>
+      </a>
+
+      {% if session.get('is_admin') %}
+      <a href="/po_audit" style="text-decoration:none;">
+        <button class="nav-btn active">PO Audit</button>
+      </a>
+
+      <!-- Admin Update Dropdown (HD/AHD only) -->
+        <div class="dropdown">
+          <button class="dropdown-btn">Admin</button>
+          <div class="dropdown-content">
+            <a href="/admin/requests">Requests</a>
+            <a href="{{ url_for('admin_user_management') }}">User Management</a>
+            {% if session.get('can_manage_halls') %}
+            <a href="{{ url_for('admin_halls') }}">Hall Management</a>
+            {% endif %}
+            {% if session.get('can_manage_shifts') %}
+            <a href="{{ url_for('admin_shift_scheduler') }}">Shift Scheduler</a>
+            {% endif %}
+            <a href="{{ url_for('admin_update_students') }}">Student Data</a>
+            <a href="{{ url_for('admin_update_packages') }}">Package Data</a>
+            <a href="{{ url_for('admin_duplicates') }}">Duplicate Manager</a>
+          </div>
+        </div>
+      {% endif %}
+
+    <a href="/my_schedule" style="text-decoration:none;">
+      <button class="nav-btn">My Schedule</button>
+    </a>
+  </div>
+
+    <div class="nav-right">
+      <div class="user-info">
+        Welcome, {{ session.get('display_name', session.get('user_initials','')) }}
+      </div>
+      <a href="/profile" class="profile-btn" style="margin-left: 10px; background: rgba(255,255,255,0.1);">Profile</a>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Shift Change Requests</h1>
+    <div class="muted">Live updates are enabled. New requests will appear automatically.</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ 'flash-success' if category == 'success' else 'flash-error' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <table id="requestsTable">
+      <thead>
+        <tr>
+          <th style="width: 16%;">When</th>
+          <th style="width: 18%;">User</th>
+          <th>Message</th>
+          <th style="width: 12%;">Status</th>
+          <th style="width: 12%;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r.created_at }}</td>
+          <td><strong>{{ r.initials }}</strong><br>{{ r.fullName }}</td>
+          <td>{{ r.message }}</td>
+          <td>
+            {% if r.status == 'open' %}
+              <span class="badge-open">OPEN</span>
+            {% else %}
+              <span class="badge-closed">CLOSED</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if r.status == 'open' %}
+            <form method="POST" action="/admin/requests/{{ r.id }}/close" style="margin:0;">
+              <button class="btn btn-close" type="submit">Close</button>
+            </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.on('connect', () => {
+      socket.emit('join_admin_room', { hall_id: {{ session.get('user_hall_id')|int }} });
+    });
+
+    socket.on('new_shift_request', (data) => {
+      // Prepend a new row (OPEN)
+      const tbody = document.querySelector('#requestsTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${data.created_at || ''}</td>
+        <td><strong></strong><br>${data.user || ''}</td>
+        <td>${data.message || ''}</td>
+        <td><span class="badge-open">OPEN</span></td>
+        <td><span class="muted">Refresh to close</span></td>
+      `;
+      tbody.prepend(tr);
+    });
+  </script>
+</body>
+</html>

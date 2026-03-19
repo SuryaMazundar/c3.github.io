@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Shift Scheduler - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .nav-bar {
+            background: #333;  
+            color: white;
+            padding: 12px 20px;
+            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: auto;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding-left: 20px;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding-right: 20px;
+            gap: 15px;  
+        }
+        
+        /* Navigation Buttons */
+        .nav-btn {
+            background: transparent;  
+            color: white;  
+            padding: 0 16px;  
+            border: none;
+            height: 100%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.1);  
+        }
+        
+        .nav-btn.active {
+            background: rgba(255,255,255,0.2);  
+        }
+        
+        /* Admin Dropdown */
+        .dropdown {
+            position: relative;
+            height: 100%;
+        }
+        
+        .dropdown-btn {
+            background: transparent;  
+            color: white;  
+            padding: 0 20px;
+            border: none;
+            height: 100%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 120px;
+        }
+        
+        .dropdown-btn:hover {
+            background: transparent;  
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;  
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);  
+            z-index: 1001;
+            overflow: hidden;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            color: #333;  
+            text-decoration: none;
+            border-bottom: 1px solid #eee;  
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+        background: #f5f5f5;  
+        }
+        
+        .dropdown-content a:last-child {
+        border-bottom: none;
+        }
+
+        /* User Info & Actions*/
+        .user-info {
+            color: white;  
+            font-size: 14px;
+            padding: 5px 10px;  
+            background: transparent;  
+            border-radius: 4px;
+        }
+        
+        .profile-btn, .logout-btn {
+            color: white; 
+            text-decoration: none;
+            padding: 8px 16px;  
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .profile-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+        
+        .profile-btn:hover {
+            background: #45a049;  
+        }
+        
+        .logout-btn {
+            background: transparent;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            display: inline-block;
+            transition: background 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .logout-btn:hover {
+            background: #da190b;  
+            background: rgba(255,255,255,0.1);  
+        }
+        
+        .container {
+            max-width: 1400px;  
+            margin: 30px auto;
+            background: white;
+            padding: 25px;  
+            border-radius: 8px;  
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 95%;  
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            flex-wrap: wrap;  
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #333;
+            font-size: 24px;  
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .week-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;  
+            white-space: nowrap;  
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;  
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #555;
+        }
+        
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        .scheduler-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .scheduler-grid {
+            display: grid;
+            grid-template-columns: 120px repeat(7, 1fr);  
+            min-width: 1400px;  
+        }
+        
+        .grid-header {
+            background: #f5f5f5;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+        
+        .day-header {
+            background: #e3f2fd;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+            border-right: 1px solid #ddd;
+            min-width: 150px;  
+        }
+        
+        .time-slot {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #eee;
+            min-height: 70px;  
+            position: relative;
+        }
+        
+        .time-label {
+            position: sticky;
+            left: 0;
+            background: white;
+            padding: 8px;
+            font-size: 12px;
+            color: #666;
+            z-index: 5;
+            border-right: 1px solid #eee;
+        }
+        
+        .shift-block {
+            position: absolute;
+            left: 4px;  
+            right: 4px; 
+            background: #4CAF50;
+            color: white;
+            padding: 8px;  
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: move;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            z-index: 20;
+            box-sizing: border-box;
+        }
+        
+        .shift-block:hover {
+            opacity: 0.9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .user-palette {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .user-item {
+            display: inline-block;
+            background: #e3f2fd;
+            padding: 10px 15px;  
+            margin: 5px;
+            border-radius: 4px;
+            cursor: move;
+            border: 1px solid #bbdefb;
+            font-size: 13px;
+        }
+        
+        .user-item:hover {
+            background: #bbdefb;
+        }
+        
+        .drop-zone {
+            position: relative;
+            min-height: 70px;  
+        }
+        
+        .drop-zone:hover {
+            background: #f0f8ff;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;  
+            border-radius: 8px;
+            min-width: 450px; 
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;  
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.info {
+            background: #2196F3;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .schedule-grid,
+        .day-column {
+            overflow: visible !important;
+        }
+
+        .shift-block {
+            z-index: 50;
+        }
+
+        .temp-shift {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: 2px dashed white !important;
+        }
+        
+        #timeAssignmentPopup input[type="time"] {
+            font-size: 16px;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interactjs/1.10.11/interact.min.js"></script>
+</head>
+<body>
+    <div class="main-container">
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <div class="nav-left">
+        <!-- Check-In Button (Current Page) -->
+        <a href="/checkin" style="text-decoration:none;">
+          <button class="nav-btn">Check-In</button>
+        </a>
+        
+        <!-- Search Button -->
+        <a href="/search" style="text-decoration:none;">
+          <button class="nav-btn">Check-Out</button>
+        </a>
+
+        <a href="/return_to_sender" style="text-decoration:none;">
+          <button class="nav-btn">RTS/FWD</button>
+        </a>
+        
+        <!-- PO Audit Button -->
+        <a href="/po_audit" style="text-decoration:none;">
+          <button class="nav-btn">PO Audit</button>
+        </a>
+        
+        <!-- Admin Button (Dropdown) -->
+        {% if session.get('is_admin') %}
+        <div class="dropdown">
+          <button class="dropdown-btn">Admin</button>
+          <div class="dropdown-content">
+            <a href="/admin/requests">Requests</a>
+            <a href="{{ url_for('admin_user_management') }}">User Management</a>
+            {% if session.get('can_manage_halls') %}
+            <a href="{{ url_for('admin_halls') }}">Hall Management</a>
+            {% endif %}
+            {% if session.get('can_manage_shifts') %}
+            <a href="{{ url_for('admin_shift_scheduler') }}" class="active">Shift Scheduler</a>
+            {% endif %}
+            <a href="{{ url_for('admin_update_students') }}">Student Data</a>
+            <a href="{{ url_for('admin_update_packages') }}">Package Data</a>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- My Schedule Button (for all users) -->
+        <a href="/my_schedule" style="text-decoration:none;">
+          <button class="nav-btn">My Schedule</button>
+        </a>
+      </div>
+      
+      <div class="nav-right">
+      <div class="user-info">
+        Welcome, {{ session.get('user_initials', '') }} ({{ session.get('user_title', '') }})
+      </div>
+      <a href="/profile" class="profile-btn" style="margin-left: 10px; background: rgba(255,255,255,0.1);">Profile</a>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </div>   
+    
+    <div class="container">
+        <div class="header">
+            <h1>Shift Scheduler - Admin Dashboard</h1>
+            <div class="week-navigation">
+                <button class="btn btn-secondary" onclick="changeWeek(-1)">← Previous Week</button>
+                <span id="weekDisplay" style="font-weight: bold; padding: 0 15px;"></span>
+                <button class="btn btn-secondary" onclick="changeWeek(1)">Next Week →</button>
+                <button class="btn btn-primary" onclick="exportSchedule()">Export PDF</button>
+            </div>
+        </div>
+        
+        {% if users %}
+        <!-- User Palette -->
+        <div class="user-palette">
+            <h3 style="margin-top: 0;">Drag Users to Schedule</h3>
+            <div id="userPalette">
+                {% for user in users %}
+                <div class="user-item" data-user-id="{{ user.id }}" data-user-initials="{{ user.initials }}" data-user-name="{{ user.fullName }}" draggable="true">
+                    {{ user.initials }} ({{ user.fullName }})
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+        <!-- Scheduler Grid -->
+        <div class="scheduler-container">
+            <div id="schedulerGrid" class="scheduler-grid">
+                <!-- Grid will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>No Users Found</h3>
+            <p>Add users to the system first to create schedules.</p>
+            <a href="{{ url_for('admin_user_management') }}" class="btn btn-primary">Go to User Management</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    
+    <!-- Shift Modal -->
+    <div id="shiftModal" class="modal">
+        <div class="modal-content">
+            <h3>Shift Details</h3>
+            <div class="form-group">
+                <label>User:</label>
+                <select id="shiftUser">
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.initials }} - {{ user.fullName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date:</label>
+                <input type="date" id="shiftDate">
+            </div>
+            <div class="form-group">
+                <label>Start Time:</label>
+                <input type="time" id="shiftStart" step="900">
+            </div>
+            <div class="form-group">
+                <label>End Time:</label>
+                <input type="time" id="shiftEnd" step="900">
+            </div>
+            <div class="form-group">
+                <label>Type:</label>
+                <select id="shiftType">
+                    <option value="Regular">Regular</option>
+                    <option value="On-Call">On-Call</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes:</label>
+                <textarea id="shiftNotes" rows="3"></textarea>
+            </div>
+            <input type="hidden" id="shiftId">
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveShift()">Save</button>
+                <button class="btn btn-danger" onclick="deleteShift()" id="deleteBtn">Delete</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    let currentWeekStart = new Date('{{ current_week_start }}');
+    let currentShifts = {};
+    let editingShiftId = null;
+
+    // === Drag/drop + rendering constants ===
+    const SLOT_HEIGHT = 70;      // px per 1-hour slot (must match CSS min-height)
+    const SNAP_MINUTES = 15;     // snap to 15-minute increments
+
+    function snapMinutes(mins) {
+        return Math.round(mins / SNAP_MINUTES) * SNAP_MINUTES;
+    }
+
+    function addMinutesToHHMMSS(timeStr, addMins) {
+        const base = timeToMinutes(timeStr);
+        return minutesToTime(base + addMins);
+    }
+    
+    // DEBUG: Add console logging immediately
+    console.log('=== SHIFT SCHEDULER DEBUG ===');
+    console.log('current_week_start:', '{{ current_week_start }}');
+    console.log('Parsed currentWeekStart:', currentWeekStart);
+    console.log('Users count:', {{ users|length if users else 0 }});
+    console.log('Time slots:', {{ time_slots|tojson|safe }});
+    console.log('======================');
+    
+    // Initialize - WITH ERROR HANDLING
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - Starting initialization');
+        
+        try {
+            updateWeekDisplay();
+            console.log('Week display updated');
+            
+            generateSchedulerGrid();
+            console.log('Grid generated');
+            
+            loadShifts();
+            console.log('Shifts loaded');
+            
+            setupDragAndDrop();
+            console.log('Drag and drop setup complete');
+            
+            // Check if grid was created
+            setTimeout(() => {
+                const grid = document.getElementById('schedulerGrid');
+                console.log('Grid element exists:', !!grid);
+                if (grid) {
+                    console.log('Grid children:', grid.children.length);
+                    console.log('Grid HTML:', grid.innerHTML);
+                } else {
+                    console.error('ERROR: #schedulerGrid element NOT FOUND!');
+                }
+            }, 100);
+            
+        } catch (error) {
+            console.error('ERROR during initialization:', error);
+            showNotification('Error initializing scheduler: ' + error.message, 'error');
+        }
+    });
+    
+    function updateWeekDisplay() {
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        
+        document.getElementById('weekDisplay').textContent = 
+            `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+        
+        console.log('Week display:', document.getElementById('weekDisplay').textContent);
+    }
+    
+    function formatDate(date) {
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+    }
+    
+    function changeWeek(weeks) {
+        console.log('Changing week by:', weeks);
+        currentWeekStart.setDate(currentWeekStart.getDate() + (weeks * 7));
+        updateWeekDisplay();
+        generateSchedulerGrid();
+        loadShifts();
+    }
+    
+    function getWeekDaysFrom(startDate) {
+        const days = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(startDate);
+            d.setDate(d.getDate() + i);
+            const iso = d.toISOString().split('T')[0];
+            days.push({
+                date: iso,
+                display_date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+            });
+        }
+        console.log('Week days:', days);
+        return days;
+    }
+    
+    function generateSchedulerGrid() {
+        console.log('=== GENERATING SCHEDULER GRID ===');
+        const grid = document.getElementById('schedulerGrid');
+        
+        if (!grid) {
+            console.error('CRITICAL ERROR: #schedulerGrid element not found!');
+            showNotification('Cannot find scheduler grid element', 'error');
+            return;
+        }
+        
+        grid.innerHTML = '';
+        console.log('Grid cleared');
+        
+        // Add header row
+        const headerRow = document.createElement('div');
+        headerRow.className = 'grid-header';
+        headerRow.textContent = 'Time';
+        grid.appendChild(headerRow);
+        console.log('Added time header');
+        
+        // Add day headers
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const weekDays = getWeekDaysFrom(currentWeekStart);
+        
+        console.log('Creating day headers...');
+        for (let i = 0; i < 7; i++) {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.innerHTML = `
+                <div style="font-weight: bold;">${days[i]}</div>
+                <div style="font-size: 12px; color: #666;">${weekDays[i].display_date}</div>
+            `;
+            dayHeader.dataset.date = weekDays[i].date;
+            grid.appendChild(dayHeader);
+        }
+        console.log('Added 7 day headers');
+        
+        // Add time slots - FIXED: Use direct time_slots variable
+        const timeSlots = {{ time_slots|tojson|safe }};
+        console.log('Time slots data:', timeSlots);
+        
+        if (!timeSlots || timeSlots.length === 0) {
+            console.error('ERROR: No time slots defined!');
+            showNotification('No time slots configured', 'error');
+            // Create default time slots as fallback
+            const defaultTimeSlots = [];
+            for (let hour = 7; hour < 23; hour++) {
+                defaultTimeSlots.push({
+                    display: `${hour}:00 - ${hour+1}:00`,
+                    start_time: `${hour}:00:00`,
+                    end_time: `${hour+1}:00:00`
+                });
+            }
+            
+            console.log('Using default time slots:', defaultTimeSlots);
+            generateTimeSlots(grid, weekDays, defaultTimeSlots);
+        } else {
+            generateTimeSlots(grid, weekDays, timeSlots);
+        }
+        
+        // Re-setup drag and drop for new grid
+        setupDropZones();
+        console.log('Grid generation complete');
+    }
+    
+    function generateTimeSlots(grid, weekDays, timeSlots) {
+        console.log('Generating', timeSlots.length, 'time slots (12am to 11pm)...');
+        
+        for (let i = 0; i < timeSlots.length; i++) {
+            const timeSlot = timeSlots[i];
+            
+            // Time label - use the display format from Flask
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-label grid-header';
+            timeLabel.textContent = timeSlot.display || 
+                                `${formatTimeForDisplay(timeSlot.start_time)} - ${formatTimeForDisplay(timeSlot.end_time)}`;
+            grid.appendChild(timeLabel);
+            
+            // Time slots for each day
+            for (let day = 0; day < 7; day++) {
+                const date = weekDays[day].date;
+                
+                const timeSlotDiv = document.createElement('div');
+                timeSlotDiv.className = 'time-slot drop-zone';
+                timeSlotDiv.dataset.date = date;
+                timeSlotDiv.dataset.startTime = timeSlot.start_time || '00:00:00';
+                timeSlotDiv.dataset.endTime = timeSlot.end_time || '01:00:00';
+                timeSlotDiv.style.position = 'relative';
+                // Keep cells visually clean (no debug date/time text)
+                timeSlotDiv.innerHTML = '';
+                
+                grid.appendChild(timeSlotDiv);
+            }
+        }
+        console.log('Generated', timeSlots.length * 7, 'time slot cells');
+    }
+
+    // Helper function to format time for display
+    function formatTimeForDisplay(timeStr) {
+        if (!timeStr) return '';
+        
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        let displayHours = hours % 12;
+        if (displayHours === 0) displayHours = 12;
+        
+        const ampm = hours < 12 ? 'AM' : 'PM';
+        return `${displayHours}:${minutes.toString().padStart(2, '0')}${ampm}`;
+    }
+    
+    function setupDragAndDrop() {
+        console.log('Setting up drag and drop...');
+        
+        // Make user items draggable
+        const userItems = document.querySelectorAll('.user-item');
+        console.log('Found', userItems.length, 'user items');
+        
+        userItems.forEach(item => {
+            item.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    userId: this.dataset.userId,
+                    userInitials: this.dataset.userInitials,
+                    userName: this.dataset.userName,
+                    type: 'user'
+                }));
+                this.style.opacity = '0.5';
+            });
+            
+            item.addEventListener('dragend', function() {
+                this.style.opacity = '';
+            });
+        });
+        
+        // Setup drop zones
+        setupDropZones();
+    }
+    
+    function setupDropZones() {
+        console.log('Setting up drop zones...');
+        
+        // Remove existing event listeners first
+        const dropZones = document.querySelectorAll('.drop-zone');
+        console.log('Found', dropZones.length, 'drop zones');
+        
+        dropZones.forEach(zone => {
+            zone.replaceWith(zone.cloneNode(true));
+        });
+        
+        // Get fresh references
+        const freshDropZones = document.querySelectorAll('.drop-zone');
+        
+        freshDropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drop-target');
+            });
+            
+            zone.addEventListener('dragleave', function() {
+                this.classList.remove('drop-target');
+            });
+            
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drop-target');
+                
+                const raw = e.dataTransfer.getData('text/plain');
+                if (!raw) return;
+                
+                let data = null;
+                try { 
+                    data = JSON.parse(raw); 
+                } catch (err) { 
+                    console.error('Error parsing drag data:', err);
+                    return; 
+                }
+                
+                const date = this.dataset.date;
+                const startTime = this.dataset.startTime;
+                
+                console.log('Dropped on:', date, startTime, 'Data:', data);
+                
+                // If an existing shift is being moved
+                if (data.shiftId) {
+                    moveExistingShift(data.shiftId, date, startTime);
+                    return;
+                }
+                
+                // If a user from palette is dropped - SHOW POPUP
+                if (data.type === 'user') {
+                    showTimeAssignmentPopup(data, date, startTime, this);
+                    return;
+                }
+            });
+        });
+        
+        // Make shift blocks draggable
+        setupShiftBlocksDraggable();
+    }
+    
+    function setupShiftBlocksDraggable() {
+        const shiftBlocks = document.querySelectorAll('.shift-block');
+        console.log('Found', shiftBlocks.length, 'shift blocks to make draggable');
+        
+        shiftBlocks.forEach(block => {
+            // Remove existing event listeners
+            const newBlock = block.cloneNode(true);
+            block.parentNode.replaceChild(newBlock, block);
+            
+            // Add drag event to new block
+            newBlock.addEventListener('dragstart', function(e) {
+                const shiftId = this.dataset.shiftId;
+                const shift = currentShifts[shiftId];
+                if (shift) {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        shiftId: shiftId,
+                        userId: shift.user_id,
+                        userInitials: shift.initials,
+                        userName: shift.fullName,
+                        type: 'shift'
+                    }));
+                    this.style.opacity = '0.5';
+                }
+            });
+            
+            newBlock.addEventListener('dragend', function() {
+                this.style.opacity = '';
+            });
+            
+            // Add click event for editing
+            newBlock.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const shiftId = this.dataset.shiftId;
+                editShift(shiftId);
+            });
+        });
+    }
+    
+    function showTimeAssignmentPopup(userData, date, startTime, dropZone) {
+        console.log('Showing time assignment popup for:', userData, 'on', date, 'at', startTime);
+        
+        // Create popup
+        const popup = document.createElement('div');
+        popup.id = 'timeAssignmentPopup';
+        popup.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            min-width: 400px;
+        `;
+        
+        popup.innerHTML = `
+            <h3 style="margin-top: 0; color: #333;">Assign Time for ${userData.userName}</h3>
+            <p style="color: #666; margin-bottom: 20px;">Date: ${date}</p>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Start Time:</label>
+                <input type="time" id="popupStartTime" value="${startTime.slice(0, 5)}" 
+                       style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">End Time:</label>
+                <input type="time" id="popupEndTime" value="${calculateDefaultEndTime(startTime)}" 
+                       style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeTimeAssignmentPopup()" 
+                        style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button onclick="confirmTimeAssignment()" 
+                        style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Assign Shift
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Store data for confirmation
+        window.pendingShiftData = {
+            userData: userData,
+            date: date,
+            dropZone: dropZone
+        };
+    }
+    
+    function calculateDefaultEndTime(startTime) {
+        const [hours, minutes] = startTime.split(':').map(Number);
+        const endHour = (hours + 4) % 24; // Default 4-hour shift
+        return `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+    
+    function closeTimeAssignmentPopup() {
+        const popup = document.getElementById('timeAssignmentPopup');
+        if (popup) popup.remove();
+        window.pendingShiftData = null;
+    }
+    
+    function confirmTimeAssignment() {
+        const startTimeInput = document.getElementById('popupStartTime').value;
+        const endTimeInput = document.getElementById('popupEndTime').value;
+        
+        if (!startTimeInput || !endTimeInput) {
+            alert('Please enter both start and end times');
+            return;
+        }
+        
+        const { userData, date, dropZone } = window.pendingShiftData;
+        
+        // Add :00 seconds
+        const startTime = startTimeInput + ':00';
+        const endTime = endTimeInput + ':00';
+        
+        // Create temporary visual placeholder immediately
+        createTemporaryShiftBlock(dropZone, userData, startTime, endTime);
+        
+        // Close popup
+        closeTimeAssignmentPopup();
+        
+        // Save to server
+        const shiftData = {
+            user_id: userData.userId,
+            shift_date: date,
+            start_time: startTime,
+            end_time: endTime,
+            shift_type: 'Regular',
+            notes: ''
+        };
+        
+        console.log('Saving custom shift:', shiftData);
+        saveShiftToServer(shiftData);
+    }
+    
+    function createTemporaryShiftBlock(dropZone, userData, startTime, endTime) {
+        // Calculate position
+        const slotHeight = SLOT_HEIGHT;
+        const slotStartMins = timeToMinutes(dropZone.dataset.startTime || '00:00:00');
+        const startMinutes = timeToMinutes(startTime);
+        const endMinutes = timeToMinutes(endTime);
+        
+        let delta = startMinutes - slotStartMins;
+        if (delta < 0) delta += 24 * 60;
+        const top = delta * (slotHeight / 60);
+        
+        let duration = endMinutes - startMinutes;
+        if (duration <= 0) duration += 24 * 60;
+        const height = (duration / 60) * slotHeight;
+        
+        // Create temporary block
+        const tempBlock = document.createElement('div');
+        tempBlock.className = 'shift-block temp-shift';
+        tempBlock.style.top = `${top}px`;
+        tempBlock.style.height = `${height}px`;
+        tempBlock.style.opacity = '0.7';
+        tempBlock.textContent = `${userData.userInitials} (${startTime.slice(0, 5)}-${endTime.slice(0, 5)}) [Saving...]`;
+        
+        dropZone.appendChild(tempBlock);
+    }
+    
+    function moveExistingShift(shiftId, newDate, newStartTime) {
+        console.log('Moving shift', shiftId, 'to', newDate, newStartTime);
+        const shift = currentShifts[shiftId];
+        if (!shift) {
+            console.error('Shift not found:', shiftId);
+            return;
+        }
+        
+        // Calculate new end time based on original duration
+        const startMins = timeToMinutes(shift.start_time);
+        const endMins = timeToMinutes(shift.end_time);
+        
+        let duration = endMins - startMins;
+        if (duration <= 0) duration += 24 * 60; // Handle overnight shifts
+        
+        const newStartMins = timeToMinutes(newStartTime);
+        const newEndMins = newStartMins + duration;
+        const newEndTime = minutesToTime(newEndMins);
+        
+        const shiftData = {
+            id: shiftId,
+            user_id: shift.user_id,
+            shift_date: newDate,
+            start_time: newStartTime,
+            end_time: newEndTime,
+            shift_type: shift.shift_type || 'Regular',
+            notes: shift.notes || ''
+        };
+        
+        console.log('Moving shift data:', shiftData);
+        saveShiftToServer(shiftData);
+    }
+    
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + (minutes || 0);
+    }
+    
+    function minutesToTime(minutes) {
+        minutes = ((minutes % (24 * 60)) + (24 * 60)) % (24 * 60);
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+    }
+    
+    function saveShiftToServer(shiftData) {
+        console.log('Saving shift to server:', shiftData);
+        
+        fetch('/api/shifts', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(shiftData)
+        })
+        .then(response => {
+            console.log('Server response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(resp => {
+            console.log('Server response:', resp);
+            if (resp.success && resp.shift) {
+                // Update local cache
+                currentShifts[resp.shift.id] = resp.shift;
+                
+                // Reload all shifts to ensure UI is consistent
+                loadShifts();
+                
+                // Show success message
+                showNotification('Shift saved successfully!', 'success');
+            } else {
+                showNotification('Error saving shift: ' + (resp.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error saving shift:', err);
+            showNotification('Error saving shift. Please try again.', 'error');
+        });
+    }
+    
+    function loadShifts() {
+        const startDate = currentWeekStart.toISOString().split('T')[0];
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(endDate.getDate() + 6);
+        const endDateStr = endDate.toISOString().split('T')[0];
+        
+        console.log('Loading shifts from', startDate, 'to', endDateStr);
+        
+        fetch(`/api/shifts?start_date=${startDate}&end_date=${endDateStr}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('Shifts API response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Shifts data received:', data);
+            if (data.success) {
+                renderShifts(data.shifts);
+            } else {
+                console.warn('Shifts API returned success=false:', data.error);
+                renderShifts([]);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading shifts:', error);
+            renderShifts([]);
+        });
+    }
+    
+    function renderShifts(shifts) {
+        console.log('Rendering', shifts.length, 'shifts');
+        
+        // Clear existing shifts
+        // Clear existing shifts (including temporary ones)
+        document.querySelectorAll('.shift-block').forEach(block => block.remove());
+        
+        // Remove any lingering time assignment popup
+        const existingPopup = document.getElementById('timeAssignmentPopup');
+        if (existingPopup) existingPopup.remove();
+
+        currentShifts = {};
+        
+        if (shifts.length === 0) {
+            console.log('No shifts to render');
+            return;
+        }
+        
+        // Group shifts by date and time for easier lookup
+        const shiftsByDateTime = {};
+        
+        shifts.forEach(shift => {
+            currentShifts[shift.id] = shift;
+            
+            const key = `${shift.shift_date}_${shift.start_time}`;
+            if (!shiftsByDateTime[key]) {
+                shiftsByDateTime[key] = [];
+            }
+            shiftsByDateTime[key].push(shift);
+        });
+        
+        console.log('Shifts grouped by date/time:', shiftsByDateTime);
+        
+        // Create shift blocks
+        Object.values(shiftsByDateTime).forEach(shiftGroup => {
+            shiftGroup.forEach(shift => {
+                createShiftBlock(shift);
+            });
+        });
+        
+        // Re-enable dragging + resizing for all shift blocks
+        setupShiftBlocksDraggable();
+        setupShiftBlocksResizable();
+    }
+    
+    function createShiftBlock(shift) {
+        console.log('Creating shift block for:', shift);
+        
+        const weekDays = getWeekDaysFrom(currentWeekStart);
+        const shiftDate = String(shift.shift_date || "");
+        
+        // Find the day index
+        const dayIndex = weekDays.findIndex(day => day.date === shiftDate);
+        if (dayIndex === -1) {
+            console.error('Shift date not in current week:', shiftDate);
+            return;
+        }
+        
+        // Find all time slots for this date
+        const timeSlots = document.querySelectorAll(`.time-slot[data-date="${shiftDate}"]`);
+        if (!timeSlots.length) {
+            console.error('No time slots found for date:', shiftDate);
+            return;
+        }
+        
+        console.log('Found', timeSlots.length, 'time slots for date', shiftDate);
+        
+        // Find the matching time slot (range-based, supports 15-min starts)
+        let targetSlot = null;
+        const shiftStartMins = timeToMinutes(shift.start_time);
+
+        for (const slot of timeSlots) {
+            const slotStart = slot.dataset.startTime || '00:00:00';
+            const slotEnd = slot.dataset.endTime || '01:00:00';
+            const slotStartMins = timeToMinutes(slotStart);
+            let slotEndMins = timeToMinutes(slotEnd);
+
+            // Handle overnight slot ranges (rare, but safe)
+            if (slotEndMins <= slotStartMins) slotEndMins += 24 * 60;
+
+            let checkShiftStart = shiftStartMins;
+            // If slot crosses midnight and shift start is after midnight, normalize
+            if (slotEndMins > 24 * 60 && checkShiftStart < slotStartMins) {
+                checkShiftStart += 24 * 60;
+            }
+
+            // Put the shift into the slot whose range contains its start
+            if (checkShiftStart >= slotStartMins && checkShiftStart < slotEndMins) {
+                targetSlot = slot;
+                break;
+            }
+        }
+
+        if (!targetSlot) {
+            console.error('No matching time slot found for shift start time:', shift.start_time);
+            return;
+        }
+        
+        // Remove existing shift block for this ID
+        const existing = targetSlot.querySelector(`.shift-block[data-shift-id="${shift.id}"]`);
+        if (existing) existing.remove();
+        
+        // Calculate position
+        const startMinutes = timeToMinutes(shift.start_time);
+        const endMinutes = timeToMinutes(shift.end_time);
+        
+        let duration = endMinutes - startMinutes;
+        if (duration <= 0) duration += 24 * 60;
+        
+        const slotHeight = SLOT_HEIGHT; // px per hour
+        const slotStartMins = timeToMinutes(targetSlot.dataset.startTime || '00:00:00');
+        let delta = startMinutes - slotStartMins;
+        if (delta < 0) delta += 24 * 60; // safety for midnight
+        const top = delta * (slotHeight / 60);
+        const height = (duration / 60) * slotHeight;
+        
+        console.log('Shift positioning - start:', startMinutes, 'end:', endMinutes, 'duration:', duration, 'top:', top, 'height:', height);
+        
+        // Create shift block element
+        const shiftBlock = document.createElement("div");
+        shiftBlock.className = "shift-block";
+        shiftBlock.style.top = `${top}px`;
+        shiftBlock.style.height = `${height}px`;
+        shiftBlock.dataset.shiftId = shift.id;
+        
+        // Set content
+        const initials = shift.initials || "";
+        const shiftStartHHMMDisplay = shift.start_time.slice(0, 5);
+        const shiftEndHHMMDisplay = shift.end_time.slice(0, 5);
+        
+        shiftBlock.textContent = `${initials} (${shiftStartHHMMDisplay}-${shiftEndHHMMDisplay})`;
+        shiftBlock.title = `${shift.fullName || ''}\n${shiftStartHHMMDisplay} - ${shiftEndHHMMDisplay}\n${shift.shift_type || 'Regular'}`;
+        
+        // Make draggable
+        shiftBlock.setAttribute('draggable', 'true');
+        
+        targetSlot.appendChild(shiftBlock);
+        console.log('Shift block created and appended');
+    }
+    
+    function editShift(shiftId) {
+        console.log('Editing shift:', shiftId);
+        const shift = currentShifts[shiftId];
+        if (!shift) {
+            console.error('Shift not found for editing:', shiftId);
+            return;
+        }
+        
+        document.getElementById('shiftUser').value = shift.user_id;
+        document.getElementById('shiftDate').value = shift.shift_date;
+        document.getElementById('shiftStart').value = shift.start_time.slice(0, 5);
+        document.getElementById('shiftEnd').value = shift.end_time.slice(0, 5);
+        document.getElementById('shiftType').value = shift.shift_type || 'Regular';
+        document.getElementById('shiftNotes').value = shift.notes || '';
+        document.getElementById('shiftId').value = shiftId;
+        
+        showShiftModal();
+    }
+    
+    function showShiftModal() {
+        document.getElementById('shiftModal').style.display = 'flex';
+        document.getElementById('deleteBtn').style.display = document.getElementById('shiftId').value ? 'block' : 'none';
+    }
+    
+    function closeModal() {
+        document.getElementById('shiftModal').style.display = 'none';
+        resetModalForms();
+    }
+    
+    function resetModalForms() {
+        document.getElementById('shiftId').value = '';
+        document.getElementById('shiftNotes').value = '';
+    }
+    
+    function saveShift() {
+        const shiftId = document.getElementById('shiftId').value;
+        const shiftData = {
+            user_id: document.getElementById('shiftUser').value,
+            shift_date: document.getElementById('shiftDate').value,
+            start_time: document.getElementById('shiftStart').value + ':00',
+            end_time: document.getElementById('shiftEnd').value + ':00',
+            shift_type: document.getElementById('shiftType').value,
+            notes: document.getElementById('shiftNotes').value
+        };
+        
+        if (shiftId) {
+            shiftData.id = shiftId;
+        }
+        
+        console.log('Saving shift from modal:', shiftData);
+        saveShiftToServer(shiftData);
+        closeModal();
+    }
+    
+    function deleteShift() {
+        if (!confirm('Are you sure you want to delete this shift?')) return;
+        
+        const shiftId = document.getElementById('shiftId').value;
+        console.log('Deleting shift:', shiftId);
+        
+        fetch(`/api/shifts?shift_id=${shiftId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Delete response:', data);
+            if (data.success) {
+                delete currentShifts[shiftId];
+                closeModal();
+                loadShifts();
+                showNotification('Shift deleted successfully!', 'success');
+            } else {
+                showNotification('Error deleting shift: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error deleting shift', 'error');
+        });
+    }
+    
+    function exportSchedule() {
+        const startDate = currentWeekStart.toISOString().split('T')[0];
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(endDate.getDate() + 6);
+        const endDateStr = endDate.toISOString().split('T')[0];
+        
+        console.log('Exporting schedule from', startDate, 'to', endDateStr);
+        window.open(`/export_schedule_pdf?start_date=${startDate}&end_date=${endDateStr}`, '_blank');
+    }
+    
+    function showNotification(message, type = 'info') {
+        console.log('Notification:', type, message);
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const shiftModal = document.getElementById('shiftModal');
+        if (event.target === shiftModal) {
+            closeModal();
+        }
+    };
+    
+    // Handle page visibility changes (tab switching)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            // Page became visible again, refresh shifts
+            loadShifts();
+        }
+    });
+    
+    // Refresh shifts every 30 seconds to catch changes from other tabs
+    setInterval(() => {
+        if (!document.hidden) {
+            loadShifts();
+        }
+    }, 30000);
+    
+    // Force refresh after 1 second (in case of race conditions)
+    setTimeout(() => {
+        console.log('Forcing grid refresh...');
+        generateSchedulerGrid();
+        loadShifts();
+    }, 1000);
+
+    // Debug helper functions
+    function forceGridGeneration() {
+        console.log('=== FORCING GRID GENERATION ===');
+        const grid = document.getElementById('schedulerGrid');
+        if (!grid) {
+            console.error('No grid element found!');
+            return;
+        }
+        
+        // Clear and regenerate
+        grid.innerHTML = '';
+        generateSchedulerGrid();
+        loadShifts();
+        showNotification('Grid regenerated', 'info');
+    }
+
+    function checkGrid() {
+        const grid = document.getElementById('schedulerGrid');
+        if (!grid) {
+            console.error('❌ No schedulerGrid element found!');
+            showNotification('Grid element missing!', 'error');
+            return;
+        }
+        
+        const children = grid.children;
+        console.log('Grid has', children.length, 'children');
+        
+        let html = '';
+        for (let i = 0; i < Math.min(5, children.length); i++) {
+            html += `${i}: ${children[i].className} - ${children[i].textContent}<br>`;
+        }
+        
+        document.getElementById('debugInfo').innerHTML += `<hr><strong>First 5 grid elements:</strong><br>${html}`;
+        showNotification(`Grid has ${children.length} elements`, 'info');
+    }
+
+    // Update debug panel
+    function updateDebugPanel() {
+        document.getElementById('debugStatus').textContent = 'Grid generated successfully';
+    }
+
+</script>
+</body>
+</html>

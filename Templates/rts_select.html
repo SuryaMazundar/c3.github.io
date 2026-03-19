@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Return to Sender - Select Packages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .nav-bar {
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-left {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-info {
+      color: white;
+      background: transparent;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      height: 100%;
+    }
+
+    .dropdown-btn {
+      background: transparent;
+      color: white;
+      padding: 0 20px;
+      border: none;
+      height: 100%;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 120px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 220px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      overflow: hidden;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .dropdown-content a {
+      display: block;
+      padding: 12px 16px;
+      color: #333;
+      text-decoration: none;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    .dropdown-content a:hover {
+      background: #f5f5f5;
+    }
+
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+
+    /* Content */
+    .content-container {
+      padding: 20px;
+      background: white;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ff6b6b;
+      padding-bottom: 10px;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input {
+      padding: 10px;
+      flex: 1;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .clear-btn {
+      background: #666;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .clear-btn:hover {
+      background: #555;
+    }
+
+    .total-count {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ff6b6b;
+      margin: 15px 0;
+      padding: 10px;
+      background: #fff0f0;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    /* Month groups */
+    .month-group {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .month-header {
+      background: #fce4e4;
+      padding: 12px 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .month-header:hover {
+      background: #f8c0c0;
+    }
+
+    .month-header .toggle-icon {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .month-content {
+      display: block;
+      padding: 0;
+    }
+
+    .month-group.collapsed .month-content {
+      display: none !important;
+    }
+
+    .month-count {
+      background: #ff6b6b;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #f2f2f2;
+      position: sticky;
+      top: 0;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .no-packages {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-style: italic;
+      font-size: 16px;
+    }
+
+    .table-scroll-container {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    /* Bulk/action bar */
+    .bulk-bar {
+      margin: 12px 0;
+      padding: 10px 15px;
+      border: 1px solid #ffcdd2;
+      border-radius: 8px;
+      background: #fff8f8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #ee5252;
+    }
+
+    .btn-secondary {
+      background: #666;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #555;
+    }
+
+    .flash {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+    }
+
+    .flash.error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    .flash.success {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .results-info {
+      margin: 10px 0;
+      color: #666;
+      font-style: italic;
+    }
+
+    .notes-toggle {
+      background: #666;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    .notes-popup {
+      position: fixed;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      max-width: 300px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    .pill.red {
+      background: #ffd9d9;
+      color: #c62828;
+    }
+
+    .pill.green {
+      background: #d9ffdd;
+      color: #2e7d32;
+    }
+
+    @media (max-width: 1200px) {
+      .content-container { margin: 10px; padding: 15px; }
+      .nav-bar { flex-direction: column; gap: 10px; padding: 10px; }
+      .nav-left, .nav-right { width: 100%; justify-content: center; flex-wrap: wrap; }
+    }
+  </style>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+</head>
+
+<body>
+  <div class="main-container">
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <div class="nav-left">
+        <a href="/checkin" style="text-decoration:none;">
+          <button class="nav-btn">Check-In</button>
+        </a>
+
+        <a href="/search" style="text-decoration:none;">
+          <button class="nav-btn">Check-Out</button>
+        </a>
+
+        <a href="/return_to_sender" style="text-decoration:none;">
+          <button class="nav-btn">RTS/FWD</button>
+        </a>
+
+        <a href="/po_audit" style="text-decoration:none;">
+          <button class="nav-btn">PO Audit</button>
+        </a>
+
+        {% if session.get('is_admin') %}
+        <div class="dropdown">
+          <button class="dropdown-btn">Admin</button>
+          <div class="dropdown-content">
+            <a href="/admin/requests">Requests</a>
+            <a href="{{ url_for('admin_user_management') }}">User Management</a>
+            {% if session.get('can_manage_halls') %}
+            <a href="{{ url_for('admin_halls') }}">Hall Management</a>
+            {% endif %}
+            {% if session.get('can_manage_shifts') %}
+            <a href="{{ url_for('admin_shift_scheduler') }}">Shift Scheduler</a>
+            {% endif %}
+            <a href="{{ url_for('admin_update_students') }}">Student Data</a>
+            <a href="{{ url_for('admin_update_packages') }}">Package Data</a>
+          </div>
+        </div>
+        {% endif %}
+
+        <a href="/my_schedule" style="text-decoration:none;">
+          <button class="nav-btn">My Schedule</button>
+        </a>
+      </div>
+
+      <div class="nav-right">
+        <div class="user-info">
+          Welcome, {{ session.get('user_initials', '') }} ({{ session.get('user_title', '') }})
+        </div>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-container">
+      <h1>Return to Sender - Select Packages</h1>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <!-- Search + Controls -->
+      <div class="search-container">
+        <div class="search-box">
+          <input type="text" id="searchInput" class="search-input"
+            placeholder="Search by Tracking ID, Student Name, or Room Number..."
+            autocomplete="off" oninput="instantSearch(this.value)">
+          <button type="button" class="clear-btn" onclick="clearSearch()">Clear</button>
+        </div>
+
+        <div id="searchResultsInfo" class="results-info" style="display:none;">
+          <span id="searchResultsText"></span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-top:15px;">
+          <div class="total-count" id="totalCountDisplay">Total Packages: 0</div>
+          <button id="collapseAllBtn" class="clear-btn" type="button" onclick="toggleAllMonths()">Collapse All</button>
+        </div>
+      </div>
+
+      <!-- Bulk Action Bar -->
+      <div class="bulk-bar">
+        <div style="font-weight:bold;">
+          Selected: <span id="selectedCount">0</span> package(s)
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a href="/checkin" class="btn btn-secondary">Cancel</a>
+          <button type="button" class="btn btn-primary" onclick="proceedWithSelected()">Proceed with Selected</button>
+        </div>
+      </div>
+
+      <!-- Hidden form for submission -->
+      <form method="POST" action="/return_to_sender/process" id="rtsForm" style="display:none;"></form>
+
+      <!-- Month Grouped Table -->
+      <div class="table-scroll-container">
+        <div id="monthContainer">
+          <p class="no-packages">Loading packages...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5, reconnectionDelay: 1000 });
+
+    let ALL_PACKAGES_BY_MONTH = [];
+    let TOTAL_COUNT = 0;
+    let selected = new Set();
+    let allCollapsed = false;
+
+    // ─── Load packages (exact same endpoint as Search page) ─────────────────
+    async function loadRTSPackages() {
+      try {
+        const res = await fetch("/api/search_initial_data");
+        const data = await res.json();
+
+        const rawMonths = data.packages_by_month || [];
+
+        // Filter each month to unchecked-out only, drop empty months
+        ALL_PACKAGES_BY_MONTH = rawMonths
+          .map(month => ({
+            ...month,
+            packages: (month.packages || []).filter(
+              pkg => !(pkg.checkoutStatus === 1 || pkg.checkoutDate)
+            )
+          }))
+          .filter(month => month.packages.length > 0);
+
+        TOTAL_COUNT = ALL_PACKAGES_BY_MONTH.reduce((sum, m) => sum + m.packages.length, 0);
+
+        renderMonthGroups(ALL_PACKAGES_BY_MONTH, TOTAL_COUNT);
+      } catch (e) {
+        console.error("Failed to load RTS packages", e);
+        document.getElementById("monthContainer").innerHTML =
+          '<p class="no-packages">Error loading packages.</p>';
+      }
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────
+    function renderMonthGroups(months, totalCount, searchQuery = null) {
+      const container = document.getElementById("monthContainer");
+      if (!container) return;
+
+      const totalEl = document.getElementById("totalCountDisplay");
+      if (totalEl) totalEl.textContent = `Total Packages: ${totalCount}`;
+
+      if (!months || months.length === 0) {
+        container.innerHTML = searchQuery
+          ? `<p class="no-packages">No packages found for "${searchQuery}"</p>`
+          : '<p class="no-packages">No packages available for Return to Sender</p>';
+        return;
+      }
+
+      let html = '';
+      months.forEach(month => {
+        const monthDisplay = month.display_month || month.month;
+        const pkgList = month.packages || [];
+        const packageCount = pkgList.length;
+
+        html += `
+          <div class="month-group" data-month="${month.month}">
+            <div class="month-header" onclick="toggleMonthGroup(this)">
+              <span>
+                <input type="checkbox" class="selectAllMonth" onclick="toggleSelectMonth(event, this)"
+                  data-month="${month.month}">
+                &nbsp;${monthDisplay} <span class="month-count">${packageCount}</span>
+              </span>
+              <span class="toggle-icon">−</span>
+            </div>
+            <div class="month-content" style="display:block;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:40px;">✓</th>
+                    <th>ID</th>
+                    <th>Tracking ID</th>
+                    <th>Student</th>
+                    <th>Room</th>
+                    <th>Hall</th>
+                    <th>Check-In Date</th>
+                    <th>Check-In Initials</th>
+                    <th>Package Type</th>
+                    <th>Perishable</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+
+        if (pkgList.length > 0) {
+          pkgList.forEach(pkg => {
+            const pkgId = pkg.pkgId || pkg.logId || '';
+            const logId = pkg.logId || pkg.pkgId || '';
+            const trackingId = pkg.TrackingID || '';
+            html += `
+              <tr>
+                <td style="text-align:center;">
+                  <input type="checkbox" class="package-checkbox" value="${logId}"
+                    onchange="toggleSelect(this)">
+                </td>
+                <td>${pkgId}</td>
+                <td>${trackingId}</td>
+                <td>${(pkg.firstName || '') + ' ' + (pkg.lastName || '')}</td>
+                <td>${pkg.roomNumber || ''}</td>
+                <td>${pkg.hallName || ''}</td>
+                <td>${pkg.checkInDate || ''}</td>
+                <td>${pkg.checkInEmpInitials || ''}</td>
+                <td>${pkg.package_type || 'N/A'}</td>
+                <td>${pkg.perishable == 'yes' ? 'Yes' : 'No'}</td>
+                <td>
+                  ${pkg.notes
+                    ? `<button class="notes-toggle" onclick="toggleNotes(this, '${pkg.notes.replace(/'/g, "\\'")}')">+</button>`
+                    : ''}
+                </td>
+              </tr>
+            `;
+          });
+        } else {
+          html += `<tr><td colspan="11" class="no-packages">No packages for this month</td></tr>`;
+        }
+
+        html += `</tbody></table></div></div>`;
+      });
+
+      container.innerHTML = html;
+
+      // Restore checkbox states for items still selected
+      document.querySelectorAll('.package-checkbox').forEach(cb => {
+        if (selected.has(cb.value)) cb.checked = true;
+      });
+    }
+
+    // ─── Selection ────────────────────────────────────────────────────────────
+    function toggleSelect(cb) {
+      cb.checked ? selected.add(cb.value) : selected.delete(cb.value);
+      updateSelectedCount();
+    }
+
+    function toggleSelectMonth(event, headerCb) {
+      event.stopPropagation(); // don't collapse the group
+      const monthGroup = headerCb.closest('.month-group');
+      const checkboxes = monthGroup.querySelectorAll('.package-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = headerCb.checked;
+        headerCb.checked ? selected.add(cb.value) : selected.delete(cb.value);
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      document.getElementById("selectedCount").textContent = selected.size;
+    }
+
+    function proceedWithSelected() {
+      if (selected.size === 0) {
+        alert("Please select at least one package");
+        return;
+      }
+      const form = document.getElementById("rtsForm");
+      // Remove old hidden inputs
+      form.querySelectorAll('input[name="selected_packages"]').forEach(el => el.remove());
+      selected.forEach(id => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "selected_packages";
+        input.value = id;
+        form.appendChild(input);
+      });
+      form.submit();
+    }
+
+    // ─── Search ───────────────────────────────────────────────────────────────
+    function instantSearch(query) {
+      const q = query.trim().toLowerCase();
+
+      if (!q) {
+        renderMonthGroups(ALL_PACKAGES_BY_MONTH, TOTAL_COUNT);
+        document.getElementById("searchResultsInfo").style.display = "none";
+        return;
+      }
+
+      let filteredMonths = [];
+      let count = 0;
+
+      for (const month of ALL_PACKAGES_BY_MONTH) {
+        const matched = month.packages.filter(p =>
+          (p.TrackingID || "").toLowerCase().includes(q) ||
+          (p.firstName || "").toLowerCase().includes(q) ||
+          (p.lastName || "").toLowerCase().includes(q) ||
+          (p.roomNumber || "").toLowerCase().includes(q) ||
+          (p.hallName || "").toLowerCase().includes(q)
+        );
+        if (matched.length) {
+          filteredMonths.push({ ...month, packages: matched });
+          count += matched.length;
+        }
+      }
+
+      renderMonthGroups(filteredMonths, count, q);
+
+      const info = document.getElementById("searchResultsInfo");
+      info.style.display = "block";
+      document.getElementById("searchResultsText").textContent =
+        `Showing results for "${query}" — ${count} package(s) found`;
+    }
+
+    function clearSearch() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("searchResultsInfo").style.display = "none";
+      renderMonthGroups(ALL_PACKAGES_BY_MONTH, TOTAL_COUNT);
+    }
+
+    // ─── Collapse / Expand ────────────────────────────────────────────────────
+    function toggleMonthGroup(header) {
+      const group = header.closest('.month-group');
+      const content = group.querySelector('.month-content');
+      const icon = header.querySelector('.toggle-icon');
+      if (group.classList.contains('collapsed')) {
+        group.classList.remove('collapsed');
+        content.style.display = 'block';
+        icon.textContent = '−';
+      } else {
+        group.classList.add('collapsed');
+        content.style.display = 'none';
+        icon.textContent = '+';
+      }
+    }
+
+    function toggleAllMonths() {
+      const groups = document.querySelectorAll('.month-group');
+      const btn = document.getElementById('collapseAllBtn');
+      groups.forEach(group => {
+        const content = group.querySelector('.month-content');
+        const icon = group.querySelector('.toggle-icon');
+        if (allCollapsed) {
+          group.classList.remove('collapsed');
+          if (content) content.style.display = 'block';
+          if (icon) icon.textContent = '−';
+        } else {
+          group.classList.add('collapsed');
+          if (content) content.style.display = 'none';
+          if (icon) icon.textContent = '+';
+        }
+      });
+      allCollapsed = !allCollapsed;
+      btn.textContent = allCollapsed ? 'Expand All' : 'Collapse All';
+    }
+
+    // ─── Notes popup ──────────────────────────────────────────────────────────
+    function toggleNotes(button, notesText) {
+      const existing = document.querySelector('.notes-popup');
+      if (existing) { existing.remove(); return; }
+
+      const popup = document.createElement('div');
+      popup.className = 'notes-popup';
+      popup.innerHTML = `
+        <strong>Notes:</strong>
+        <p>${notesText}</p>
+        <button onclick="this.parentElement.remove()"
+          style="background:#666;color:white;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;">Close</button>
+      `;
+      const rect = button.getBoundingClientRect();
+      popup.style.left = (rect.right + 5) + 'px';
+      popup.style.top = rect.top + 'px';
+      document.body.appendChild(popup);
+
+      button.textContent = '-';
+      button.onclick = function () {
+        popup.remove();
+        button.textContent = '+';
+        button.onclick = function () { toggleNotes(button, notesText); };
+      };
+    }
+
+    // ─── Init & live updates ──────────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", loadRTSPackages);
+    socket.on("refresh_recent", loadRTSPackages);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Search & Check-Out Packages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    /* Navigation Bar Styles - NEW EXACT LAYOUT */
+    .nav-bar {
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    
+    .nav-left {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .nav-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .nav-btn.active {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .user-info {
+      color: white;
+      background: transparent;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .logout-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 200px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .dropdown-menu a:hover {
+      background: #f5f5f5;
+    }
+    
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    
+    .content-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: white;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #1976d2;
+      padding-bottom: 10px;
+    }
+    
+    .search-container {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    
+    .search-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .search-input {
+      padding: 10px;
+      flex: 1;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    
+    .search-btn {
+      background: #1976d2;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .search-btn:hover {
+      background: #1565c0;
+    }
+    
+    .clear-btn {
+      background: #666;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .clear-btn:hover {
+      background: #555;
+    }
+    
+    .notes-toggle {
+      background: #666;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+    
+    .notes-popup {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      max-width: 300px;
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+    
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    
+    th {
+      background: #f2f2f2;
+      position: sticky;
+      top: 0;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+    
+    .pill.red {
+      background: #ffd9d9;
+      color: #c62828;
+    }
+    
+    .pill.green {
+      background: #d9ffdd;
+      color: #2e7d32;
+    }
+    
+    .delete-btn {
+      background: #c62828;
+      color: white;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    
+    .delete-btn:hover {
+      background: #b71c1c;
+    }
+    
+    .checkout-action-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    
+    .checkout-action-btn:hover {
+      background: #45a049;
+    }
+    
+    .results-info {
+      margin: 10px 0;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+    
+    .error {
+      color: red;
+      margin-top: 10px;
+      padding: 10px;
+      background: #ffebee;
+      border-radius: 4px;
+      border-left: 4px solid #d32f2f;
+    }
+    
+    /* Month grouping styles */
+    .month-group {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .month-header {
+      background: #e3f2fd;
+      padding: 12px 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .month-header:hover {
+      background: #bbdefb;
+    }
+    
+    .month-header .toggle-icon {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .month-content {
+      display: none;
+      padding: 0;
+    }
+    
+    .month-group.expanded .month-content {
+      display: block;
+    }
+    
+    .month-count {
+      background: #1976d2;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    
+    .no-packages {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-style: italic;
+      font-size: 16px;
+    }
+    
+    .export-btn {
+      background: #2e7d32;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    
+    .export-btn:hover {
+      background: #1b5e20;
+    }
+    
+    .total-count {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1976d2;
+      margin: 15px 0;
+      padding: 10px;
+      background: #e3f2fd;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    
+    .table-scroll-container {
+      max-height: calc(100vh - 300px);
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .content-container {
+        margin: 10px;
+        padding: 15px;
+      }
+      
+      .nav-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .nav-left, .nav-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .search-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+      
+      .nav-btn, .logout-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      
+      table {
+        font-size: 11px;
+      }
+      
+      th, td {
+        padding: 6px 8px;
+      }
+    }
+
+    /* Form submission loading only */
+    form.submitting {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    form.submitting button[type="submit"] {
+        position: relative;
+    }
+
+    form.submitting button[type="submit"]::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: button-spin 0.6s linear infinite;
+    }
+
+    @keyframes button-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+  </style>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+</head>
+<body>
+
+  
+  <!-- Navigation Bar - EXACT LAYOUT FROM IMAGE -->
+  <div class="nav-bar">
+    <div class="nav-left">
+      <!-- Check-In Button -->
+      <a href="/checkin" style="text-decoration:none;">
+        <button class="nav-btn">Check-In</button>
+      </a>
+      
+      <!-- Check-Out Button (Active) -->
+      <a href="/search" style="text-decoration:none;">
+        <button class="nav-btn active">Check-Out</button>
+      </a>
+      
+      <!-- PO Audit Button -->
+      <a href="/po_audit" style="text-decoration:none;">
+        <button class="nav-btn">PO Audit</button>
+      </a>
+      
+      <!-- Admin Update Dropdown -->
+      {% if session.get('can_manage_users') %}
+      <div class="dropdown">
+        <button class="nav-btn">Admin Update</button>
+        <div class="dropdown-menu">
+          <a href="/admin/update_students">Student Data Update</a>
+          <a href="/admin/update_packages">Package Data Update</a>
+          <a href="/admin/user_management">User Management</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+    <div class="nav-right">
+      <div class="user-info">
+        Welcome, {{ session.get('user_initials', '') }} ({{ session.get('user_title', '') }})
+      </div>
+      <a href="/profile" class="nav-btn" style="margin-left: 10px; background: rgba(255,255,255,0.1);">Profile</a>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <h1>Search & Check-Out Packages</h1>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      <!-- Search Form -->
+      <div class="search-container">
+        <form method="GET" action="/search">
+          <div class="search-box">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search by Tracking ID, Student Name, or Room Number..." class="search-input">
+            <button type="submit" class="search-btn">Search</button>
+            <a href="/search" class="clear-btn">Clear</a>
+          </div>
+        </form>
+
+        {% if search_query %}
+        <div class="results-info">
+          Showing search results for "{{ search_query }}" - {{ total_count }} package(s) found
+        </div>
+        {% else %}
+        <div class="results-info">
+          Showing all packages grouped by month - {{ total_count }} total package(s)
+        </div>
+        {% endif %}
+        
+        <div class="total-count">
+          Total Packages: {{ total_count }}
+        </div>
+      </div>
+
+      <!-- Export Button -->
+      <br>
+      <a href="/export_csv" target="_blank" style="text-decoration:none;">
+        <button class="export-btn">Export to Excel</button>
+      </a>
+
+      <hr>
+
+      <!-- Search Results or Month Grouped Packages -->
+      <div class="table-scroll-container">
+        {% if search_query %}
+          <!-- Show flat table for searches -->
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tracking ID</th>
+                <th>Student</th>
+                <th>Room</th>
+                <th>Check-In Date</th>
+                <th>Check-In Initials</th>
+                <th>Package Type</th>
+                <th>Checkout Date</th>
+                <th>Checkout Initials</th>
+                <th>Perishable</th>
+                <th>Notes</th>
+                <th>Checked Out</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in packages %}
+              <tr>
+                <td>{{ r.pkgId or '' }}</td>
+                <td>{{ r.TrackingID or '' }}</td>
+                <td>{{ (r.firstName ~ ' ' ~ r.lastName)|trim }}</td>
+                <td>{{ r.roomNumber or '' }}</td>
+                <td>{{ r.checkInDate or '' }}</td>
+                <td>{{ r.checkInEmpInitials or '' }}</td>
+                <td>{{ r.package_type or '' }}</td>
+                <td>{{ r.checkoutDate or '' }}</td>
+                <td>{{ r.checkoutEmpInitials or '' }}</td>
+                <td>{{ 'Yes' if r.perishable == 'yes' else 'No' }}</td>
+                <td>
+                  {% if r.notes %}
+                    <button class="notes-toggle" onclick="toggleNotes(this, '{{ r.notes|escape }}')">+</button>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if r.checkoutStatus == 1 or r.checkoutStatus == True or r.checkoutDate != None %}
+                    <span class="pill green">Yes</span>
+                  {% else %}
+                    <span class="pill red">No</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    {% if r.checkoutStatus != 1 and r.checkoutStatus != True and r.checkoutDate == None %}
+                      <form method="POST" action="/search" style="display: inline;">
+                        <input type="hidden" name="tracking_id" value="{{ r.TrackingID }}">
+                        <button type="submit" class="checkout-action-btn">Check Out</button>
+                      </form>
+                    {% endif %}
+                    <button class="delete-btn" onclick="deleteEntry({{ r.logId }})">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="13" class="no-packages">
+                  No packages found for "{{ search_query }}"
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <!-- Show month grouping when no search -->
+          {% if packages_by_month %}
+            {% for month_data in packages_by_month %}
+            <div class="month-group {% if loop.first %}expanded{% endif %}" data-month="{{ month_data.month }}">
+              <div class="month-header" onclick="toggleMonthGroup(this)">
+                <span>
+                  {{ month_data.display_month }}
+                  <span class="month-count">{{ month_data.packages|length }}</span>
+                </span>
+                <span class="toggle-icon">−</span>
+              </div>
+              <div class="month-content">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Tracking ID</th>
+                      <th>Student</th>
+                      <th>Room</th>
+                      <th>Check-In Date</th>
+                      <th>Check-In Initials</th>
+                      <th>Package Type</th>
+                      <th>Checkout Date</th>
+                      <th>Checkout Initials</th>
+                      <th>Perishable</th>
+                      <th>Notes</th>
+                      <th>Checked Out</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for r in month_data.packages %}
+                    <tr>
+                      <td>{{ r.pkgId or '' }}</td>
+                      <td>{{ r.TrackingID or '' }}</td>
+                      <td>{{ (r.firstName ~ ' ' ~ r.lastName)|trim }}</td>
+                      <td>{{ r.roomNumber or '' }}</td>
+                      <td>{{ r.checkInDate or '' }}</td>
+                      <td>{{ r.checkInEmpInitials or '' }}</td>
+                      <td>{{ r.package_type or '' }}</td>
+                      <td>{{ r.checkoutDate or '' }}</td>
+                      <td>{{ r.checkoutEmpInitials or '' }}</td>
+                      <td>{{ 'Yes' if r.perishable == 'yes' else 'No' }}</td>
+                      <td>
+                        {% if r.notes %}
+                          <button class="notes-toggle" onclick="toggleNotes(this, '{{ r.notes|escape }}')">+</button>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if r.checkoutStatus == 1 or r.checkoutStatus == True or r.checkoutDate != None %}
+                          <span class="pill green">Yes</span>
+                        {% else %}
+                          <span class="pill red">No</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          {% if r.checkoutStatus != 1 and r.checkoutStatus != True and r.checkoutDate == None %}
+                            <form method="POST" action="/search" style="display: inline;">
+                              <input type="hidden" name="tracking_id" value="{{ r.TrackingID }}">
+                              <button type="submit" class="checkout-action-btn">Check Out</button>
+                            </form>
+                          {% endif %}
+                          <button class="delete-btn" onclick="deleteEntry({{ r.logId }})">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td colspan="13" class="no-packages">No packages for this month</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="no-packages">
+              No packages in the system
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleMonthGroup(header) {
+      const group = header.parentElement;
+      const content = group.querySelector('.month-content');
+      const toggleIcon = header.querySelector('.toggle-icon');
+      
+      if (group.classList.contains('expanded')) {
+        group.classList.remove('expanded');
+        toggleIcon.textContent = '+';
+      } else {
+        group.classList.add('expanded');
+        toggleIcon.textContent = '−';
+      }
+    }
+
+    function toggleNotes(button, notesText) {
+      // Remove existing popup
+      const existingPopup = document.querySelector('.notes-popup');
+      if (existingPopup) {
+        existingPopup.remove();
+        return;
+      }
+
+      // Create new popup
+      const popup = document.createElement('div');
+      popup.className = 'notes-popup';
+      popup.innerHTML = `
+        <strong>Notes:</strong>
+        <p>${notesText}</p>
+        <button onclick="this.parentElement.remove()" style="background:#666;color:white;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;">Close</button>
+      `;
+      
+      // Position popup near the button
+      const rect = button.getBoundingClientRect();
+      popup.style.position = 'fixed';
+      popup.style.left = (rect.right + 5) + 'px';
+      popup.style.top = (rect.top) + 'px';
+      
+      document.body.appendChild(popup);
+      
+      // Change button to collapse
+      button.textContent = '-';
+      button.onclick = function() { 
+        popup.remove(); 
+        button.textContent = '+'; 
+        button.onclick = function() { toggleNotes(button, notesText); }; 
+      };
+    }
+
+    async function deleteEntry(logId) {
+      if (!confirm("Are you sure you want to delete this entry? This action cannot be undone.")) {
+        return;
+      }
+      
+      try {
+        const response = await fetch("/delete_entry", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `log_id=${logId}`
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          alert("Entry deleted successfully!");
+          location.reload();
+        } else {
+          alert("Error deleting entry: " + (result.error || "Unknown error"));
+        }
+      } catch (error) {
+        alert("Error deleting entry: " + error.message);
+      }
+    }
+
+    // Add confirmation to checkout forms
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkoutForms = document.querySelectorAll('form[action="/search"]');
+      checkoutForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+          const trackingId = this.querySelector('input[name="tracking_id"]').value;
+          if (!confirm(`Check out package ${trackingId}?`)) {
+            e.preventDefault();
+          }
+        });
+      });
+    });
+
+    // Handle form submissions only (no loader on navigation)
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            this.classList.add('submitting');
+            // Allow navigation to happen naturally
+            // The form will stay in submitting state until page reloads
+        });
+    });
+    
+    // Focus search input on page load
+    document.querySelector('.search-input').focus();
+});
+
+// Socket.IO for live updates
+const socket = io({
+  transports: ["websocket", "polling"],
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000
+});
+
+socket.on("connect", () => {
+  console.log("Connected to server");
+});
+
+socket.on("connect_error", (error) => {
+  console.log("Connection error:", error);
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("Disconnected:", reason);
+});
+
+socket.on("refresh_recent", () => {
+  location.reload();
+});
+  </script>
+</body>
+</html>

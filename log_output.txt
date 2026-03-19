@@ -1,0 +1,596 @@
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+[SOCKET] Browser disconnected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+[NEW SCAN] KWHYISNTTHETRACKINGIDBGEIEINGPASTEDIMMEDIATELYASISCANITINSCLOGICORINTRAFDESKTOPCLIENT
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+[SOCKET] Browser disconnected
+[SOCKET] Browser connected
+[NEW SCAN] 42379960029926129027883388711010
+[CHECK-IN] 42379960029926129027883388711010 logged for Room 114-1
+[SOCKET] Browser disconnected
+[NEW SCAN] SM42039960029920273388710410
+[SOCKET] Browser connected
+[NEW SCAN] SVKPERFECTBUTIWANTFTHETRTACKINGIDISALREADYINTHELISTTHENITMUSTPRINTTHEDATAITALREADYHASANDALSO
+[CHECK-IN] 420379969261290278833887110410 logged for Room 114-1
+[SOCKET] Browser disconnected
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+[SOCKET] Browser connected
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+[SOCKET] Browser connected
+Flask-SocketIO running on http://127.0.0.1:5000
+[SOCKET] Browser connected
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+Flask-SocketIO running on http://127.0.0.1:5000
+[SOCKET] Browser connected
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO (eventlet mode)...
+Starting Flask-SocketIO...
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-03 17:07:51.899122
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-03 17:08:03.566629
+[SOCKET] Browser connected
+Export file updated at 2025-11-03 17:08:05.835628
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 17:55:02.410114
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 17:56:25.490534
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:00:59.141242
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:04:01.660876
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:04:51.206302
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:05:52.545047
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:09:39.203921
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:11:16.544114
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:17:24.983470
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:20:02.803104
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:23:50.235889
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:24:54.838318
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:26:12.522920
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:27:54.992085
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:34:04.738916
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:34:28.319851
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:35:12.009963
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:35:58.684084
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:38:52.411942
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:39:49.671211
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:40:06.144736
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:41:08.827137
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:41:26.638967
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:41:50.316518
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:42:10.303995
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:43:50.209354
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:44:57.408526
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:45:24.283701
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:46:40.001181
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:47:32.471337
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:48:46.339903
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:48:59.857169
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:49:19.523964
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:52:01.443210
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:55:23.635930
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:55:50.391406
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:56:11.670379
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:57:29.052279
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:58:35.397359
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:58:55.344213
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 18:59:14.432083
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:00:07.525018
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:02:40.408415
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:03:07.170859
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:03:32.437742
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:05:04.300010
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:06:06.078058
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:07:45.156756
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:08:07.032598
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:08:21.718689
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:15:03.116914
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:15:27.073103
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:15:49.247830
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:16:10.612458
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-04 19:18:46.897171
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:35:58.688024
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:37:59.340306
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:41:18.795408
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:48:55.752149
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:52:16.295264
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:54:13.971704
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:55:48.167707
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:57:28.974428
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 11:59:48.175111
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:05:14.694744
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:07:48.651613
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:10:47.118565
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:11:48.856715
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:18:16.905033
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:22:47.466836
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:24:13.695776
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:29:22.661598
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:31:03.787424
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:31:06.066025
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:34:34.915874
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:34:37.227862
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:36:22.411231
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:40:13.012168
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:49:54.166936
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:52:36.478523
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 12:54:18.320595
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:00:51.614322
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:02:16.230179
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:05:13.409841
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:08:40.029929
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:11:40.242241
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:14:09.450550
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:15:32.483191
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:17:47.749961
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:25:41.071516
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:29:05.800012
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:30:47.260678
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:33:43.921162
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:36:57.528297
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:36:59.974836
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:39:35.133914
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:39:37.766302
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:44:28.203170
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:44:36.500742
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:45:55.705103
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:49:16.679296
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:51:49.066872
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:52:04.284270
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 13:56:24.043161
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:01:16.647586
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:02:38.375514
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:04:16.673193
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:06:29.292327
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:06:43.620354
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:12:17.043889
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:20:00.661346
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:40:09.298366
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:41:15.591680
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:42:16.605057
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 14:53:11.892902
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:30:37.728849
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:32:08.076223
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:33:38.880234
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:34:27.156490
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:36:58.975787
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+[SOCKET] Browser connected
+Export file updated at 2025-11-05 15:38:02.092395Starting Flask-SocketIO...
+Testing database connection...
+Using config: {'host': 'localhost', 'user': 'root', 'password': '', 'database': 'clement_package_log'}
+DATABASE CONNECTION FAILED:
+   Error: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+   Error Code: 2003
+   SQL State: HY000
+CRITICAL: Cannot connect to database. Please check:
+   1. Is XAMPP MySQL running?
+   2. Is the database 'clement_package_log' created?
+   3. Are the credentials in DB_CONFIG correct?
+Press Enter to exit...Starting Flask-SocketIO...
+Testing database connection...
+Using config: {'host': 'localhost', 'user': 'root', 'password': '', 'database': 'clement_package_log'}
+DATABASE CONNECTION FAILED:
+   Error: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+   Error Code: 2003
+   SQL State: HY000
+CRITICAL: Cannot connect to database. Please check:
+   1. Is XAMPP MySQL running?
+   2. Is the database 'clement_package_log' created?
+   3. Are the credentials in DB_CONFIG correct?
+Press Enter to exit...

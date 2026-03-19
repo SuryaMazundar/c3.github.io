@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Shift Scheduler - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .week-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        .scheduler-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .scheduler-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            min-width: 1200px;
+            border: 1px solid #ddd;
+        }
+        
+        .grid-header {
+            background: #f5f5f5;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
+        
+        .day-header {
+            background: #e3f2fd;
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        .time-slot {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #eee;
+            min-height: 60px;
+            position: relative;
+        }
+        
+        .time-label {
+            position: sticky;
+            left: 0;
+            background: white;
+            padding: 5px;
+            font-size: 12px;
+            color: #666;
+            z-index: 5;
+        }
+        
+        .shift-block {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            background: #4CAF50;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: move;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        
+        .shift-block:hover {
+            opacity: 0.9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .user-palette {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .user-item {
+            display: inline-block;
+            background: #e3f2fd;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: move;
+            border: 1px solid #bbdefb;
+        }
+        
+        .user-item:hover {
+            background: #bbdefb;
+        }
+        
+        .drop-zone {
+            position: relative;
+            min-height: 60px;
+        }
+        
+        .drop-zone:hover {
+            background: #f0f8ff;
+        }
+        
+        .template-panel {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #ffecb3;
+        }
+        
+        .template-item {
+            display: inline-block;
+            background: #ffecb3;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #ffd54f;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 400px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interactjs/1.10.11/interact.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar" style="background: #333; color: white; padding: 12px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="nav-left">
+            <a href="/checkin" style="text-decoration:none;">
+                <button class="nav-btn" style="background: transparent; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Check-In</button>
+            </a>
+            <a href="/admin/shift_scheduler" style="text-decoration:none;">
+                <button class="nav-btn" style="background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Shift Scheduler</button>
+            </a>
+        </div>
+        <div class="nav-right">
+            <span style="color: white; margin-right: 15px;">Welcome, {{ session.get('user_initials', '') }} (Admin)</span>
+            <a href="/logout" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 4px;">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Shift Scheduler - Admin Dashboard</h1>
+            <div class="week-navigation">
+                <button class="btn btn-secondary" onclick="changeWeek(-1)">← Previous Week</button>
+                <span id="weekDisplay" style="font-weight: bold;"></span>
+                <button class="btn btn-secondary" onclick="changeWeek(1)">Next Week →</button>
+                <button class="btn btn-primary" onclick="exportSchedule()">Export PDF</button>
+                <a href="/checkin" class="btn btn-secondary">Back to Check-In</a>
+            </div>
+        </div>
+        
+        {% if users %}
+        <!-- User Palette -->
+        <div class="user-palette">
+            <h3 style="margin-top: 0;">Drag Users to Schedule</h3>
+            <div id="userPalette">
+                {% for user in users %}
+                <div class="user-item" data-user-id="{{ user.id }}" data-user-initials="{{ user.initials }}" data-user-name="{{ user.fullName }}" draggable="true">
+                    {{ user.initials }} ({{ user.fullName }})
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Template Panel -->
+        <div class="template-panel">
+            <h3 style="margin-top: 0;">Shift Templates</h3>
+            <div id="templatePalette">
+                {% for template in templates %}
+                <div class="template-item" data-template-id="{{ template.id }}" data-start="{{ template.start_time }}" data-end="{{ template.end_time }}">
+                    {{ template.template_name }} ({{ template.start_time[:5] }} - {{ template.end_time[:5] }})
+                </div>
+                {% endfor %}
+                <button class="btn btn-primary" onclick="showTemplateModal()">+ Add Template</button>
+            </div>
+        </div>  
+        
+        <!-- Scheduler Grid -->
+        <div class="scheduler-container">
+            <div id="schedulerGrid" class="scheduler-grid">
+                <!-- Grid will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>No Users Found</h3>
+            <p>Add users to the system first to create schedules.</p>
+            <a href="{{ url_for('admin_user_management') }}" class="btn btn-primary">Go to User Management</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Template Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <h3>Shift Template</h3>
+            <div class="form-group">
+                <label>Template Name:</label>
+                <input type="text" id="templateName" placeholder="e.g., Morning Shift">
+            </div>
+            <div class="form-group">
+                <label>Start Time:</label>
+                <input type="time" id="templateStart" step="900">
+            </div>
+            <div class="form-group">
+                <label>End Time:</label>
+                <input type="time" id="templateEnd" step="900">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveTemplate()">Save</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Shift Modal -->
+    <div id="shiftModal" class="modal">
+        <div class="modal-content">
+            <h3>Shift Details</h3>
+            <div class="form-group">
+                <label>User:</label>
+                <select id="shiftUser">
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.initials }} - {{ user.fullName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date:</label>
+                <input type="date" id="shiftDate">
+            </div>
+            <div class="form-group">
+                <label>Start Time:</label>
+                <input type="time" id="shiftStart" step="900">
+            </div>
+            <div class="form-group">
+                <label>End Time:</label>
+                <input type="time" id="shiftEnd" step="900">
+            </div>
+            <div class="form-group">
+                <label>Type:</label>
+                <select id="shiftType">
+                    <option value="Regular">Regular</option>
+                    <option value="On-Call">On-Call</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes:</label>
+                <textarea id="shiftNotes" rows="3"></textarea>
+            </div>
+            <input type="hidden" id="shiftId">
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveShift()">Save</button>
+                <button class="btn btn-danger" onclick="deleteShift()" id="deleteBtn">Delete</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentWeekStart = new Date('{{ current_week_start }}');
+        let slotSize = 60; // minutes
+        let currentShifts = {};
+        let editingShiftId = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWeekDisplay();
+            generateSchedulerGrid();
+            loadShifts();
+            setupDragAndDrop();
+        });
+        
+        function updateWeekDisplay() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            const options = { month: 'short', day: 'numeric' };
+            document.getElementById('weekDisplay').textContent = 
+                `${currentWeekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()}`;
+        }
+        
+        function changeWeek(weeks) {
+            currentWeekStart.setDate(currentWeekStart.getDate() + (weeks * 7));
+            updateWeekDisplay();
+            generateSchedulerGrid();
+            loadShifts();
+        }
+        
+        function getWeekDaysFrom(currentWeekStart) {
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(currentWeekStart);
+                d.setDate(d.getDate() + i);
+                const iso = d.toISOString().split('T')[0]; // YYYY-MM-DD
+                days.push({
+                date: iso,
+                display_date: d.toLocaleDateString()
+                });
+            }
+            return days;
+            }
+
+        
+        function generateSchedulerGrid() {
+            const grid = document.getElementById('schedulerGrid');
+            grid.innerHTML = '';
+            
+            // Add header row
+            const headerRow = document.createElement('div');
+            headerRow.className = 'grid-header';
+            headerRow.textContent = 'Time';
+            grid.appendChild(headerRow);
+            
+            // Add day headers
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const weekDays = getWeekDaysFrom(currentWeekStart);
+
+            
+            for (let i = 0; i < 7; i++) {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.innerHTML = `
+                    <div>${days[i]}</div>
+                    <div style="font-size: 12px; color: #666;">${weekDays[i].display_date}</div>
+                `;
+                dayHeader.dataset.date = weekDays[i].date;
+                grid.appendChild(dayHeader);
+            }
+            
+            // Add time slots
+            const timeSlots = {{ time_slots|tojson }};
+            
+            for (let i = 0; i < timeSlots.length; i++) {
+                const timeSlot = timeSlots[i];
+                
+                // Time label
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'time-label grid-header';
+                timeLabel.textContent = timeSlot.display;
+                grid.appendChild(timeLabel);
+                
+                // Time slots for each day
+                for (let day = 0; day < 7; day++) {
+                    const date = weekDays[day].date;
+                    
+                    const timeSlotDiv = document.createElement('div');
+                    timeSlotDiv.className = 'time-slot drop-zone';
+                    timeSlotDiv.dataset.date = date;
+                    timeSlotDiv.dataset.startTime = timeSlot.start_time;
+                    timeSlotDiv.dataset.endTime = timeSlot.end_time;
+                    timeSlotDiv.style.position = 'relative';
+                    
+                    grid.appendChild(timeSlotDiv);
+                }
+            }
+        }
+        
+        function setupDragAndDrop() {
+            // Make user items draggable
+            const userItems = document.querySelectorAll('.user-item');
+            userItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        userId: this.dataset.userId,
+                        userInitials: this.dataset.userInitials,
+                        userName: this.dataset.userName
+                    }));
+                    this.style.opacity = '0.5';
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.style.opacity = '';
+                });
+            });
+            
+            // Make time slots droppable
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drop-target');
+                });
+                
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('drop-target');
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drop-target');
+                    
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const date = this.dataset.date;
+                    const startTime = this.dataset.startTime;
+                    
+                    // Calculate end time (1 hour default)
+                    const [hours, minutes] = startTime.split(':').map(Number);
+                    const endHour = (hours + 1) % 24;
+                    const endTime = `${endHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+                    
+                    // Show shift modal
+                    document.getElementById('shiftUser').value = data.userId;
+                    document.getElementById('shiftDate').value = date;
+                    document.getElementById('shiftStart').value = startTime;
+                    document.getElementById('shiftEnd').value = endTime;
+                    document.getElementById('shiftId').value = '';
+                    
+                    showShiftModal();
+                });
+            });
+            
+            // Template items click
+            const templateItems = document.querySelectorAll('.template-item');
+            templateItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const startTime = this.dataset.start;
+                    const endTime = this.dataset.end;
+                    
+                    // For templates, just show the times in alert for now
+                    alert(`Template: ${startTime.slice(0,5)} - ${endTime.slice(0,5)}\n\nDrag a user to assign this template.`);
+                });
+            });
+        }
+        
+        function loadShifts() {
+            const startDate = currentWeekStart.toISOString().split('T')[0];
+            const endDate = new Date(currentWeekStart);
+            endDate.setDate(endDate.getDate() + 6);
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            fetch(`/api/shifts?start_date=${startDate}&end_date=${endDateStr}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderShifts(data.shifts);
+                    }
+                })
+                .catch(error => console.error('Error loading shifts:', error));
+        }
+        
+        function renderShifts(shifts) {
+            // Clear existing shifts
+            document.querySelectorAll('.shift-block').forEach(block => block.remove());
+            currentShifts = {};
+            
+            shifts.forEach(shift => {
+                currentShifts[shift.id] = shift;
+                createShiftBlock(shift);
+            });
+        }
+        
+        function createShiftBlock(shift) {
+            const weekDays = getWeekDaysFrom(currentWeekStart);
+
+            // Normalize date + times
+            const shiftDate = String(shift.shift_date || "");
+            const shiftStartStr = String(shift.start_time || "");
+            const shiftEndStr = String(shift.end_time || "");
+
+            const shiftStartHHMM = shiftStartStr.slice(0, 5);
+            const shiftEndHHMM = shiftEndStr.slice(0, 5);
+
+            const dayIndex = weekDays.findIndex(day => day.date === shiftDate);
+            if (dayIndex === -1) return;
+
+            // Convert HH:MM to minutes (avoid Date parsing issues)
+            const [sh, sm] = shiftStartHHMM.split(":").map(Number);
+            const [eh, em] = shiftEndHHMM.split(":").map(Number);
+
+            if (Number.isNaN(sh) || Number.isNaN(sm) || Number.isNaN(eh) || Number.isNaN(em)) return;
+
+            let startMinutes = sh * 60 + sm;
+            let endMinutes = eh * 60 + em;
+
+            // Handle overnight shifts (e.g., 23:00 -> 01:00)
+            if (endMinutes <= startMinutes) endMinutes += 24 * 60;
+
+            const duration = endMinutes - startMinutes;
+
+            // Find the time slot container for this date
+            const timeSlots = document.querySelectorAll(`.time-slot[data-date="${shiftDate}"]`);
+            if (!timeSlots.length) return;
+
+            // Match the correct slot by comparing HH:MM only
+            let targetSlot = null;
+            for (const slot of timeSlots) {
+                const slotStartHHMM = String(slotStart).slice(0,5);
+                const shiftStartHHMM = String(shift.start_time).slice(0,5);
+                
+                if (slotStartHHMM === shiftStartHHMM) {
+                    targetSlot = slot;
+                    break;
+                }
+            }
+            if (!targetSlot) return;
+
+            // If this shift already exists in the UI, remove it (prevents duplicates on reload)
+            const existing = targetSlot.querySelector(`.shift-block[data-shift-id="${shift.id}"]`);
+            if (existing) existing.remove();
+
+            // Positioning inside the slot
+            const slotHeight = 60; // px per hour
+            const top = (startMinutes % 60) * (slotHeight / 60);
+            const height = (duration / 60) * slotHeight;
+
+            const shiftBlock = document.createElement("div");
+            shiftBlock.className = "shift-block";
+            shiftBlock.style.top = `${top}px`;
+            shiftBlock.style.height = `${height}px`;
+
+            const initials = shift.initials || "";
+            const fullName = shift.fullName || "";
+            const shiftType = shift.shift_type || "";
+
+            shiftBlock.textContent = `${initials} (${shiftStartHHMM}-${shiftEndHHMM})`;
+            shiftBlock.dataset.shiftId = shift.id;
+            shiftBlock.title = `${fullName}\n${shiftStartHHMM} - ${shiftEndHHMM}\n${shiftType}`;
+
+            shiftBlock.onclick = function (e) {
+                e.stopPropagation();
+                editShift(shift.id);
+            };
+
+            targetSlot.appendChild(shiftBlock);
+        }
+
+        
+        function editShift(shiftId) {
+            const shift = currentShifts[shiftId];
+            if (!shift) return;
+            
+            document.getElementById('shiftUser').value = shift.user_id;
+            document.getElementById('shiftDate').value = shift.shift_date;
+            document.getElementById('shiftStart').value = shift.start_time;
+            document.getElementById('shiftEnd').value = shift.end_time;
+            document.getElementById('shiftType').value = shift.shift_type || 'Regular';
+            document.getElementById('shiftNotes').value = shift.notes || '';
+            document.getElementById('shiftId').value = shiftId;
+            
+            showShiftModal();
+        }
+        
+        function showShiftModal() {
+            document.getElementById('shiftModal').style.display = 'flex';
+            document.getElementById('deleteBtn').style.display = document.getElementById('shiftId').value ? 'block' : 'none';
+        }
+        
+        function showTemplateModal() {
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('shiftModal').style.display = 'none';
+            document.getElementById('templateModal').style.display = 'none';
+            resetModalForms();
+        }
+        
+        function resetModalForms() {
+            document.getElementById('shiftId').value = '';
+            document.getElementById('shiftNotes').value = '';
+        }
+        
+        function saveShift() {
+            const normTime = (t) => (t && t.length === 5) ? (t + ':00') : t;
+            const shiftData = {
+                id: document.getElementById('shiftId').value || null,
+                user_id: document.getElementById('shiftUser').value,
+                shift_date: document.getElementById('shiftDate').value,
+                start_time: normTime(document.getElementById('shiftStart').value),
+                end_time: normTime(document.getElementById('shiftEnd').value),
+                shift_type: document.getElementById('shiftType').value,
+                notes: document.getElementById('shiftNotes').value
+            };
+            
+            fetch('/api/shifts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(shiftData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update client state immediately
+                    if (data.shift && data.shift.id) {
+                        currentShifts[data.shift.id] = data.shift;
+                        createShiftBlock(data.shift);
+                    }
+                    closeModal();
+                    // still refresh to ensure everything stays consistent
+                    loadShifts();
+                } else {
+                    alert('Error saving shift: ' + data.error);
+                }
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving shift');
+            });
+        }
+        
+        function deleteShift() {
+            if (!confirm('Are you sure you want to delete this shift?')) return;
+            
+            const shiftId = document.getElementById('shiftId').value;
+            
+            fetch(`/api/shifts/${shiftId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal();
+                    loadShifts();
+                } else {
+                    alert('Error deleting shift: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting shift');
+            });
+        }
+        
+        function saveTemplate() {
+            const templateData = {
+                name: document.getElementById('templateName').value,
+                start_time: document.getElementById('templateStart').value + ':00',
+                end_time: document.getElementById('templateEnd').value + ':00'
+            };
+            
+            if (!templateData.name || !templateData.start_time || !templateData.end_time) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            fetch('/api/shift_templates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(templateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal();
+                    location.reload(); // Reload to show new template
+                } else {
+                    alert('Error saving template: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving template');
+            });
+        }
+        
+        function updateSlotSize(size) {
+            slotSize = parseInt(size);
+            alert('Changing time slot size will be implemented in the next update!');
+        }
+        
+        function updateView() {
+            alert('Daily view coming soon!');
+        }
+        
+        function exportSchedule() {
+            const startDate = currentWeekStart.toISOString().split('T')[0];
+            const endDate = new Date(currentWeekStart);
+            endDate.setDate(endDate.getDate() + 6);
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            window.open(`/export_schedule_pdf?start_date=${startDate}&end_date=${endDateStr}`, '_blank');
+        }
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const shiftModal = document.getElementById('shiftModal');
+            const templateModal = document.getElementById('templateModal');
+            
+            if (event.target === shiftModal) {
+                closeModal();
+            }
+            if (event.target === templateModal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>

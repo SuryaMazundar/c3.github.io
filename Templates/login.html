@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Package System Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: white;
+    }
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+      border: 1px solid #ddd;
+      position: relative;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    input:focus {
+      border-color: black;
+      outline: none;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .error {
+      color: #e74c3c;
+      margin-top: 10px;
+      background: #ffeaea;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ffcdd2;
+    }
+    .hall-code {
+      text-transform: uppercase;
+    }
+    
+    /* Help Icon Styles */
+    .help-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #667eea;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: help;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 10;
+    }
+    
+    .help-icon:hover {
+      background: #5a6fd8;
+    }
+    
+    /* Hall Codes Popup */
+    .hall-codes-popup {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 0;
+    }
+    
+    .hall-codes-popup.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hall-codes-header {
+      background: #667eea;
+      color: white;
+      padding: 15px;
+      border-radius: 8px 8px 0 0;
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .hall-codes-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .hall-code-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .hall-code-item:last-child {
+      border-bottom: none;
+    }
+    
+    .hall-code-item:hover {
+      background: #f5f5f5;
+    }
+    
+    .code {
+      font-weight: bold;
+      color: #333;
+      font-family: monospace;
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    
+    .name {
+      color: #666;
+      font-size: 14px;
+      text-align: right;
+      flex: 1;
+      margin-left: 10px;
+    }
+    
+    .no-halls {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .click-to-copy {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+      text-align: center;
+      padding: 10px;
+      border-top: 1px solid #eee;
+      background: #f9f9f9;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-container {
+        width: 90%;
+        padding: 30px 20px;
+      }
+      
+      .hall-codes-popup {
+        width: 280px;
+        right: -20px;
+      }
+    }
+    
+    /* Loader Styles */
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #4CAF50;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Question Mark Tooltip */
+    .field-help-icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 5px;
+        cursor: help;
+        position: relative;
+    }
+    
+    .field-help-icon .tooltip {
+        display: none;
+        position: absolute;
+        background: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        width: 200px;
+        z-index: 1000;
+        font-size: 12px;
+        line-height: 1.4;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .field-help-icon:hover .tooltip {
+        display: block;
+    }
+    
+    /* Feature Suggestion */
+    .feature-suggestion {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .suggestion-btn {
+        background: #667eea;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+    }
+    
+    .suggestion-box {
+        display: none;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box h4 {
+        margin-top: 0;
+        color: #333;
+    }
+    
+    .suggestion-box textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box button {
+        background: #4CAF50;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+  </div>
+  
+  <div class="login-container">
+    <!-- Help Icon -->
+    <div class="help-icon" id="helpIcon" title="View available hall codes">
+      ?
+    </div>
+    
+    <!-- Hall Codes Popup -->
+    <div class="hall-codes-popup" id="hallCodesPopup">
+      <h3 class="hall-codes-header">Available Hall Codes</h3>
+      <div class="click-to-copy">Click a code to copy</div>
+      <ul class="hall-codes-list" id="hallCodesList">
+        {% if hall_codes %}
+          {% for hall in hall_codes %}
+          <li class="hall-code-item" data-code="{{ hall.hall_code }}">
+            <span class="code">{{ hall.hall_code }}</span>
+            <span class="name">{{ hall.hall_name }}</span>
+          </li>
+          {% endfor %}
+        {% else %}
+          <li class="no-halls">No hall codes found</li>
+        {% endif %}
+      </ul>
+    </div>
+    
+    <h1>Welcome to C3</h1>
+    <p style="color: #666; margin-bottom: 30px;">Please login with your credentials</p>
+    
+    <form method="POST" autocomplete="off">
+      <div class="form-group">
+        <label for="hall_code">Hall Code
+          <span class="field-help-icon">?
+            <span class="tooltip">Enter hall code (e.g., CLMT for Clement Hall)</span>
+          </span>
+        </label>
+        <input type="text" id="hall_code" name="hall_code" maxlength="10" 
+               placeholder="Enter hall code (e.g., CLMT)" required 
+               class="hall-code">
+      </div>
+      
+      <div class="form-group">
+        <label for="username">Username
+          <!--<span class="field-help-icon">?
+            <span class="tooltip">Enter your username</span>
+          </span>-->
+        </label>
+        <input type="text" id="username" name="username" 
+               placeholder="Enter your username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password
+          <!--<span class="field-help-icon">?
+            <span class="tooltip">Enter your password</span>
+          </span>-->
+        </label>
+        <input type="password" id="password" name="password" 
+               placeholder="Enter your password" required>
+      </div>
+      
+      <button type="submit" class="login-btn">Login</button>
+      
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+    </form>
+  </div>
+  
+  <!-- Feature Suggestion -->
+  <div class="feature-suggestion">
+    <div class="suggestion-box" id="suggestionBox">
+      <h4>Feature Suggestion</h4>
+      <textarea id="suggestionText" placeholder="Share your ideas for new features or improvements..."></textarea>
+      <button onclick="submitSuggestion()">Submit</button>
+    </div>
+    <button class="suggestion-btn" onclick="toggleSuggestionBox()">Feature Suggestions</button>
+  </div>
+
+  <script>
+    // Loader Functions
+    function showLoader() {
+        document.getElementById('loader').style.display = 'flex';
+    }
+    
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+    }
+    
+    // Show loader on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        showLoader();
+        window.addEventListener('load', hideLoader);
+        setTimeout(hideLoader, 3000);
+    });
+    
+    // Show loader on form submissions
+    document.addEventListener('submit', function(e) {
+        if (e.target.tagName === 'FORM') {
+            showLoader();
+        }
+    });
+    
+    // Auto-uppercase hall code input
+    document.getElementById('hall_code').addEventListener('input', function(e) {
+      this.value = this.value.toUpperCase();
+    });
+    
+    // Toggle hall codes popup
+    const helpIcon = document.getElementById('helpIcon');
+    const hallCodesPopup = document.getElementById('hallCodesPopup');
+    const hallCodeInput = document.getElementById('hall_code');
+    
+    helpIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hallCodesPopup.classList.toggle('show');
+    });
+    
+    // Close popup when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!helpIcon.contains(e.target) && !hallCodesPopup.contains(e.target)) {
+        hallCodesPopup.classList.remove('show');
+      }
+    });
+    
+    // Close popup on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        hallCodesPopup.classList.remove('show');
+      }
+    });
+    
+    // Click to copy functionality
+    const hallCodeItems = document.querySelectorAll('.hall-code-item');
+    hallCodeItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const hallCode = this.getAttribute('data-code');
+        if (hallCode) {
+          // Copy to clipboard
+          navigator.clipboard.writeText(hallCode).then(() => {
+            // Update input field
+            hallCodeInput.value = hallCode;
+            hallCodeInput.focus();
+            
+            // Show visual feedback on the clicked item
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span style="color: #4CAF50;">✓ Copied!</span>';
+            this.style.background = '#f0fff0';
+            
+            setTimeout(() => {
+              this.innerHTML = originalText;
+              this.style.background = '';
+            }, 1000);
+            
+            // Close popup
+            hallCodesPopup.classList.remove('show');
+          }).catch(err => {
+            console.error('Failed to copy: ', err);
+            // Fallback: just set the input value
+            hallCodeInput.value = hallCode;
+            hallCodeInput.focus();
+            hallCodesPopup.classList.remove('show');
+          });
+        }
+      });
+    });
+    
+    // Auto-focus hall code input on page load
+    document.getElementById('hall_code').focus();
+    
+    // Search/filter functionality for many hall codes
+    document.addEventListener('DOMContentLoaded', function() {
+      const hallCodeItems = document.querySelectorAll('.hall-code-item');
+      const searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Search hall codes...';
+      searchInput.style.cssText = `
+        width: calc(100% - 30px);
+        margin: 10px 15px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      `;
+      
+      if (hallCodeItems.length > 5) {
+        const header = document.querySelector('.hall-codes-header');
+        header.parentNode.insertBefore(searchInput, header.nextSibling);
+        
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          hallCodeItems.forEach(item => {
+            const code = item.getAttribute('data-code').toLowerCase();
+            const name = item.querySelector('.name').textContent.toLowerCase();
+            if (code.includes(searchTerm) || name.includes(searchTerm)) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+        
+        searchInput.focus();
+      }
+    });
+    
+    // Feature Suggestion Functions
+    function toggleSuggestionBox() {
+        const box = document.getElementById('suggestionBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+    
+    function submitSuggestion() {
+        const text = document.getElementById('suggestionText').value;
+        if (text.trim()) {
+            alert('Thank you for your suggestion! We\'ll consider it for future updates.');
+            document.getElementById('suggestionText').value = '';
+            document.getElementById('suggestionBox').style.display = 'none';
+        } else {
+            alert('Please enter your suggestion before submitting.');
+        }
+    }
+    
+    // Close suggestion box when clicking outside
+    document.addEventListener('click', function(e) {
+        const suggestionBtn = document.querySelector('.suggestion-btn');
+        const suggestionBox = document.getElementById('suggestionBox');
+        
+        if (!suggestionBtn.contains(e.target) && !suggestionBox.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+  </script>
+</body>
+</html>

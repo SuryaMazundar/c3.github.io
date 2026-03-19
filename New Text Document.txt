@@ -1,0 +1,375 @@
+@app.route("/profile/edit", methods=["GET", "POST"])
+@login_required
+def user_self_edit():
+    """Allow users to edit their own info"""
+    try:
+        conn = get_conn()
+        cur = conn.cursor(dictionary=True)
+        
+        # Get current user info
+        cur.execute("""
+            SELECT i.*, h.hall_name, h.hall_code
+            FROM initialscheck i
+            JOIN halls h ON i.hall_id = h.id
+            WHERE i.id = %s
+        """, (session['user_id'],))
+        user = cur.fetchone()
+        
+        if not user:
+            flash("User not found", "error")
+            return redirect(url_for('checkin'))
+        
+        if request.method == "POST":
+            action = request.form.get("action")
+            
+            if action == "update_info":
+                # Update user info
+                new_username = request.form.get("username", "").strip()
+                new_initials = request.form.get("initials", "").strip().upper()
+                new_fullname = request.form.get("fullname", "").strip()
+                
+                # Check if username changed and if it's unique
+                if new_username != user['username']:
+                    cur.execute("SELECT id FROM initialscheck WHERE username = %s AND hall_id = %s AND id != %s",
+                               (new_username, user['hall_id'], user['id']))
+                    if cur.fetchone():
+                        flash("Username already exists in your hall", "error")
+                        return redirect(url_for('user_self_edit'))
+                
+                # Update user
+                cur.execute("""
+                    UPDATE initialscheck 
+                    SET username = %s, initials = %s, fullName = %s
+                    WHERE id = %s
+                """, (new_username, new_initials, new_fullname, user['id']))
+                
+                conn.commit()
+                
+                # Update session
+                session['user_initials'] = new_initials
+                session['user_full_name'] = new_fullname
+                
+                flash("Profile updated successfully!", "success")
+                return redirect(url_for('user_self_edit'))
+                
+            elif action == "change_password":
+                # Change password
+                current_password = request.form.get("current_password", "")
+                new_password = request.form.get("new_password", "")
+                confirm_password = request.form.get("confirm_password", "")
+                
+                # Verify current password
+                if not verify_password(current_password, user['password_hash']):
+                    flash("Current password is incorrect", "error")
+                    return redirect(url_for('user_self_edit'))
+                
+                if new_password != confirm_password:
+                    flash("New passwords do not match", "error")
+                    return redirect(url_for('user_self_edit'))
+                
+                if len(new_password) < 8:
+                    flash("Password must be at least 8 characters", "error")
+                    return redirect(url_for('user_self_edit'))
+                
+                # Update password
+                new_password_hash = hash_password(new_password)
+                cur.execute("""
+                    UPDATE initialscheck 
+                    SET password_hash = %s, temporary_password = FALSE, last_password_change = NOW()
+                    WHERE id = %s
+                """, (new_password_hash.decode('utf-8'), user['id']))
+                
+                conn.commit()
+                
+                # Update session
+                session['temporary_password'] = False
+                
+                flash("Password changed successfully!", "success")
+                return redirect(url_for('user_self_edit'))
+        
+        cur.close()
+        conn.close()
+        
+        return render_template("user_self_management.html", user=user)
+        
+    except Exception as e:
+        print(f"USER SELF EDIT ERROR: {e}")
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('checkin'))
+
+
+
+Next:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hall Management</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #333; margin-bottom: 10px; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+    .action-bar { display: flex; justify-content: space-between; margin: 20px 0; }
+    .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #4CAF50; color: white; }
+    .btn-secondary { background: #666; color: white; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #f2f2f2; }
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+    .badge-active { background: #d4edda; color: #155724; }
+    
+    /* Loader Styles */
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #4CAF50;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Question Mark Tooltip */
+    .help-icon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 5px;
+        cursor: help;
+        position: relative;
+    }
+    
+    .help-icon .tooltip {
+        display: none;
+        position: absolute;
+        background: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        width: 200px;
+        z-index: 1000;
+        font-size: 12px;
+        line-height: 1.4;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .help-icon:hover .tooltip {
+        display: block;
+    }
+    
+    /* Feature Suggestion */
+    .feature-suggestion {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .suggestion-btn {
+        background: #667eea;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+    }
+    
+    .suggestion-box {
+        display: none;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box h4 {
+        margin-top: 0;
+        color: #333;
+    }
+    
+    .suggestion-box textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+    
+    .suggestion-box button {
+        background: #4CAF50;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+  </div>
+  
+  <div class="container">
+    <h1>Hall Management
+      <span class="help-icon">?
+        <span class="tooltip">Manage residence halls in the system. Add, edit, or remove halls.</span>
+      </span>
+    </h1>
+    <p>Manage residence halls in the system</p>
+    
+    <div class="action-bar">
+      <a href="/checkin" class="btn btn-secondary">Back to Check-In</a>
+      <a href="/admin/halls/add" class="btn btn-primary">Add New Hall</a>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Hall Code
+            <span class="help-icon">?
+              <span class="tooltip">Unique code for the hall (e.g., CLMT for Clement Hall)</span>
+            </span>
+          </th>
+          <th>Hall Name
+            <span class="help-icon">?
+              <span class="tooltip">Full name of the residence hall</span>
+            </span>
+          </th>
+          <th>Users
+            <span class="help-icon">?
+              <span class="tooltip">Number of users assigned to this hall</span>
+            </span>
+          </th>
+          <th>Created By
+            <span class="help-icon">?
+              <span class="tooltip">User who created this hall record</span>
+            </span>
+          </th>
+          <th>Created Date
+            <span class="help-icon">?
+              <span class="tooltip">Date when hall was added to system</span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hall in halls %}
+        <tr>
+          <td><strong>{{ hall.hall_code }}</strong></td>
+          <td>{{ hall.hall_name }}</td>
+          <td>{{ hall.user_count }}</td>
+          <td>{{ hall.created_by_initials or 'System' }}</td>
+          <td>{{ hall.created_at.strftime('%Y-%m-%d') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Feature Suggestion -->
+  <div class="feature-suggestion">
+    <div class="suggestion-box" id="suggestionBox">
+      <h4>Feature Suggestion</h4>
+      <textarea id="suggestionText" placeholder="Share your ideas for new features or improvements..."></textarea>
+      <button onclick="submitSuggestion()">Submit</button>
+    </div>
+    <button class="suggestion-btn" onclick="toggleSuggestionBox()">Feature Suggestions</button>
+  </div>
+
+  <script>
+    // Loader Functions
+    function showLoader() {
+        document.getElementById('loader').style.display = 'flex';
+    }
+    
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+    }
+    
+    // Show loader on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        showLoader();
+        window.addEventListener('load', hideLoader);
+        setTimeout(hideLoader, 3000);
+    });
+    
+    // Show loader on form submissions
+    document.addEventListener('submit', function(e) {
+        if (e.target.tagName === 'FORM') {
+            showLoader();
+        }
+    });
+    
+    // Show loader on link clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' && e.target.getAttribute('href') && 
+            !e.target.getAttribute('href').startsWith('#') &&
+            !e.target.getAttribute('href').startsWith('javascript:')) {
+            showLoader();
+        }
+    });
+    
+    // Feature Suggestion Functions
+    function toggleSuggestionBox() {
+        const box = document.getElementById('suggestionBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+    
+    function submitSuggestion() {
+        const text = document.getElementById('suggestionText').value;
+        if (text.trim()) {
+            alert('Thank you for your suggestion! We\'ll consider it for future updates.');
+            document.getElementById('suggestionText').value = '';
+            document.getElementById('suggestionBox').style.display = 'none';
+        } else {
+            alert('Please enter your suggestion before submitting.');
+        }
+    }
+    
+    // Close suggestion box when clicking outside
+    document.addEventListener('click', function(e) {
+        const suggestionBtn = document.querySelector('.suggestion-btn');
+        const suggestionBox = document.getElementById('suggestionBox');
+        
+        if (!suggestionBtn.contains(e.target) && !suggestionBox.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+  </script>
+</body>
+</html>

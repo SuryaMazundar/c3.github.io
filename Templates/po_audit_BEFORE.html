@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PO Audit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navigation Bar Styles */
+    .nav-bar {
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .nav-left {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .nav-btn.active {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .user-info {
+      color: white;
+      background: transparent;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 200px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      border-bottom: 1px solid #eee;
+    }
+
+    .dropdown-menu a:hover {
+      background: #f5f5f5;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .content-container {
+      flex: 1;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #2196F3;
+      padding-bottom: 10px;
+    }
+
+    .upload-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px dashed #ddd;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100%;
+      background: white;
+    }
+
+    .submit-btn {
+      background: #2196F3;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .download-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .error {
+      color: #d32f2f;
+      margin: 15px 0;
+      padding: 12px;
+      background: #ffebee;
+      border-radius: 4px;
+      border-left: 4px solid #d32f2f;
+    }
+
+    .success {
+      color: #2e7d32;
+      margin: 15px 0;
+      padding: 12px;
+      background: #e8f5e8;
+      border-radius: 4px;
+      border-left: 4px solid #2e7d32;
+    }
+
+    .results-section {
+      margin-top: 30px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #2196F3;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #2196F3;
+      display: block;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .instructions {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196F3;
+    }
+
+    .instructions h3 {
+      margin-top: 0;
+      color: #1565c0;
+    }
+
+    .instructions ul {
+      margin-bottom: 0;
+    }
+
+    /* Loader Styles */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #4CAF50;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Question Mark Tooltip */
+    .help-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 16px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 5px;
+      cursor: help;
+      position: relative;
+    }
+
+    .help-icon .tooltip {
+      display: none;
+      position: absolute;
+      background: #333;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      width: 200px;
+      z-index: 1000;
+      font-size: 12px;
+      line-height: 1.4;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .help-icon:hover .tooltip {
+      display: block;
+    }
+
+    /* Feature Suggestion */
+    .feature-suggestion {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .suggestion-btn {
+      background: #667eea;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      border: none;
+    }
+
+    .suggestion-box {
+      display: none;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      width: 300px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+    }
+
+    .suggestion-box h4 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .suggestion-box textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .suggestion-box button {
+      background: #4CAF50;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Admin Dropdown */
+        .dropdown {
+        position: relative;
+        height: 100%;
+        }
+        
+        .dropdown-btn {
+        background: transparent;  
+        color: white;  
+        padding: 0 20px;
+        border: none;
+        height: 100%;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 120px;
+        }
+        
+        .dropdown-btn:hover {
+        background: transparent;  
+        }
+        
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;  
+        min-width: 220px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);  
+        z-index: 1001;
+        overflow: hidden;
+        }
+        
+        .dropdown:hover .dropdown-content {
+        display: block;
+        }
+        
+        .dropdown-content a {
+        display: block;
+        padding: 12px 16px;
+        color: #333;  
+        text-decoration: none;
+        border-bottom: 1px solid #eee;  
+        transition: background 0.2s;
+        font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+        background: #f5f5f5;  
+        }
+        
+        .dropdown-content a:last-child {
+        border-bottom: none;
+        }
+        
+        .profile-btn {
+      background: transparent;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      display: inline-block;
+      transition: background 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+        
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-left">
+      <a href="/checkin" style="text-decoration:none;">
+        <button class="nav-btn">Check-In</button>
+      </a>
+
+      <a href="/search" style="text-decoration:none;">
+        <button class="nav-btn">Check-Out</button>
+      </a>
+
+      <a href="/return_to_sender" style="text-decoration:none;">
+        <button class="nav-btn">RTS/FWD</button>
+      </a>
+      
+      {% if session.get('is_admin') %}
+      <a href="/po_audit" style="text-decoration:none;">
+        <button class="nav-btn active">PO Audit</button>
+      </a>
+
+      <!-- Admin Update Dropdown (HD/AHD only) -->
+        <div class="dropdown">
+          <button class="dropdown-btn">Admin</button>
+          <div class="dropdown-content">
+            <a href="/admin/requests">Requests</a>
+            <a href="{{ url_for('admin_user_management') }}">User Management</a>
+            {% if session.get('can_manage_halls') %}
+            <a href="{{ url_for('admin_halls') }}">Hall Management</a>
+            {% endif %}
+            {% if session.get('can_manage_shifts') %}
+            <a href="{{ url_for('admin_shift_scheduler') }}">Shift Scheduler</a>
+            {% endif %}
+            <a href="{{ url_for('admin_update_students') }}">Student Data</a>
+            <a href="{{ url_for('admin_update_packages') }}">Package Data</a>
+            <a href="{{ url_for('admin_duplicates') }}">Duplicate Manager</a>
+          </div>
+        </div>
+      {% endif %}
+
+    <a href="/my_schedule" style="text-decoration:none;">
+      <button class="nav-btn">My Schedule</button>
+    </a>
+  </div>
+
+    <div class="nav-right">
+      <div class="user-info">
+        Welcome, {{ session.display_name }}
+      </div>
+      <a href="/profile" class="profile-btn" style="margin-left: 10px; background: rgba(255,255,255,0.1);">Profile</a>
+      <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <h1>PO Audit</h1>
+
+    <div class="instructions">
+      <h3>How to use PO Audit:</h3>
+      <ul>
+        <li>Upload an Excel or CSV file from the official checkout platform</li>
+        <li>The system will compare tracking IDs with our database</li>
+        <li>Download the audit results showing packages not checked out in our system</li>
+        <li>Results include: Packages not checked out, total common packages, and missing packages</li>
+      </ul>
+    </div>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if success %}
+      <div class="success">{{ success }}</div>
+    {% endif %}
+
+    <div class="upload-section">
+      <h2>Upload Official File
+        <span class="help-icon">?
+          <span class="tooltip">Upload file from official platform for comparison</span>
+        </span>
+      </h2>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="audit_file">Select Excel or CSV file from official platform:</label>
+          <input type="file" id="audit_file" name="audit_file" accept=".csv,.xlsx,.xls" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Run Audit</button>
+      </form>
+    </div>
+
+    {% if results %}
+    <div class="results-section">
+      <h2>Audit Results</h2>
+
+      <!-- STATS ONLY -->
+      <div class="results-grid">
+        <div class="stat-card">
+          <span class="stat-number">{{ results.not_checked_out_count }}</span>
+          <span class="stat-label">Packages Not Checked Out</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-number">{{ results.found_in_both_count }}</span>
+          <span class="stat-label">Total Common Packages</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-number">{{ results.not_found_in_both_count }}</span>
+          <span class="stat-label">Missing Packages</span>
+        </div>
+      </div>
+
+      {% if show_auto_checkout_prompt %}
+      <div class="alert alert-warning" style="margin-top:20px;">
+        {{ auto_checkout_count }} packages are marked <b>Picked Up</b> in the official system
+        but are still <b>Checked In</b> in your system.<br><br>
+
+        <form method="POST" action="/po_audit_apply_checkout"
+          onsubmit="return confirm('This will CHECK OUT all matching packages in the system. Continue?');">
+          <input type="hidden" name="tracking_ids" value="{{ auto_checkout_ids }}">
+          <button class="btn btn-danger">
+            Checkout All {{ auto_checkout_count }} Packages
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="/download_audit_results" class="download-btn">Download Full Audit Results</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Feature Suggestion -->
+  <div class="feature-suggestion">
+    <div class="suggestion-box" id="suggestionBox">
+      <h4>Feature Suggestion</h4>
+      <textarea id="suggestionText" placeholder="Share your ideas for new features or improvements..."></textarea>
+      <button onclick="submitSuggestion()">Submit</button>
+    </div>
+    <button class="suggestion-btn" onclick="toggleSuggestionBox()">Feature Suggestions</button>
+  </div>
+
+  <script>
+    // Loader Functions
+    function showLoader() {
+      document.getElementById('loader').style.display = 'flex';
+    }
+
+    function hideLoader() {
+      document.getElementById('loader').style.display = 'none';
+    }
+
+    // Show loader on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      showLoader();
+      window.addEventListener('load', hideLoader);
+      setTimeout(hideLoader, 3000);
+    });
+
+    // Show loader on form submissions
+    document.addEventListener('submit', function(e) {
+      if (e.target.tagName === 'FORM') {
+        showLoader();
+      }
+    });
+
+    // Show loader on link clicks
+    document.addEventListener('click', function(e) {
+      if (e.target.tagName === 'A' && e.target.getAttribute('href') &&
+          !e.target.getAttribute('href').startsWith('#') &&
+          !e.target.getAttribute('href').startsWith('javascript:')) {
+        showLoader();
+      }
+    });
+
+    // Feature Suggestion Functions
+    function toggleSuggestionBox() {
+      const box = document.getElementById('suggestionBox');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function submitSuggestion() {
+      const text = document.getElementById('suggestionText').value;
+      if (text.trim()) {
+        alert('Thank you for your suggestion! We\'ll consider it for future updates.');
+        document.getElementById('suggestionText').value = '';
+        document.getElementById('suggestionBox').style.display = 'none';
+      } else {
+        alert('Please enter your suggestion before submitting.');
+      }
+    }
+
+    // Close suggestion box when clicking outside
+    document.addEventListener('click', function(e) {
+      const suggestionBtn = document.querySelector('.suggestion-btn');
+      const suggestionBox = document.getElementById('suggestionBox');
+
+      if (!suggestionBtn.contains(e.target) && !suggestionBox.contains(e.target)) {
+        suggestionBox.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
